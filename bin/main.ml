@@ -1,21 +1,13 @@
 open Terminal_tok
-type video = {
-  title : string;
-  ascii : string;
-  genre : string;
-}
+open Types
 
-type user = {
-  name : string;
-  mutable vid_history : video * string * string list;
-      (* feel free to expand here: you can add stuff like (video , watchtime,
-         liked..??)*)
-}
 let run () : 'a Lwt.t =
-  let user = 
+  let user = { name = ""; vid_history = [] } in
   let%lwt () = Lwt_io.printl "Instructions \n press enter to continue" in
   let%lwt a = Lwt_io.read_line Lwt_io.stdin in
-  let%lwt ascii = Recommender.recommend user in
+  let%lwt ascii = Lwt.return (Recommender.recommend user).ascii in
+  let%lwt () = Lwt_io.printl ascii in
+
   Lwt.return ()
 
 let _ = Lwt_main.run (run ())

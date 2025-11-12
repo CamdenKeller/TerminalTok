@@ -1,0 +1,5 @@
+(test
+ (name test_terminal_tok)
+ (libraries ounit2 terminal_tok)
+  (deps (glob_files_rec ../data/*))
+)

@@ -1,0 +1,4 @@
+(executable
+ (public_name terminal-tok)
+ (name main)
+ (libraries terminal_tok))

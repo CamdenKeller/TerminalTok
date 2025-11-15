@@ -4,9 +4,14 @@ type video = {
   genre : string;
 }
 
+type interaction = {
+  video : video;
+  (* watchtime : float; *)
+  (* Add both watchtime and time before liking? *)
+  mutable liked : bool;
+}
+
 type user = {
   name : string;
-  mutable vid_history : (video * string * string) list;
-      (* feel free to expand here: you can add stuff like (video , watchtime,
-         liked..??)*)
+  mutable vid_history : interaction list;
 }

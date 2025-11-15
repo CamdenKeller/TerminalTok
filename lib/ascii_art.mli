@@ -1,11 +1,7 @@
-(**
- * A library of ASCII art strings.
- *)
+(** * A library of ASCII art strings. *)
 
-(**
- * The [Art] module contains all the ASCII art pieces as string literals.
- * You can access them using [Art.a], [Art.b], etc.
- *)
+(** * The [Art] module contains all the ASCII art pieces as string literals. *
+    You can access them using [Art.a], [Art.b], etc. *)
 module Art : sig
   val a : string
   val b : string
@@ -32,9 +28,8 @@ module Art : sig
   val w : string
 end
 
-(**
- * [print_art art_string]
- *
- * Prints the given string to standard output, followed by a newline.
- *)
+val ascii_lst : string list
+
 val print_art : string -> unit
+(** * [print_art art_string] * * Prints the given string to standard output,
+    followed by a newline. *)

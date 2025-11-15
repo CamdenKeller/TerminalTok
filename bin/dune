@@ -1,5 +1,5 @@
 (executable
  (public_name terminal-tok)
  (name main)
- (libraries terminal_tok lwt.unix)
+ (libraries terminal_tok str lwt lwt.unix)
  (preprocess (pps lwt_ppx)))

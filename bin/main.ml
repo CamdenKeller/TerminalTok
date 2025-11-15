@@ -16,9 +16,9 @@ let run () : 'a Lwt.t =
     Lwt_io.printlf
       "Instructions:\n\
        Once the session has begun...\n\
-      \  - Press SPACEBAR to move to next Tok\n\
-      \  - Press 'L' to like\n\
-      \  - Press 'Q' to quit the session\n\
+      \  - Enter 'L' to like\n\
+      \  - Enter 'Q' to quit the session\n\
+       |  - Enter anything else to go to the next Tok\n\
       \      \n\
        (press ENTER to begin session)"
   in
@@ -39,21 +39,28 @@ let run () : 'a Lwt.t =
       let%lwt () = Lwt.return (incr index) in
       let%lwt () = Lwt_io.printl ascii' in
 
-      let%lwt input = Lwt_io.read_line Lwt_io.stdin in
+      let rec session_input () =
+        let%lwt input = Lwt_io.read_line Lwt_io.stdin in
 
-      match String.uppercase_ascii input with
-      | "Q" ->
-          add_to_history watch user;
-          Lwt.return_unit
-      | " " ->
-          add_to_history watch user;
-          session_loop ()
-      | "L" ->
-          let%lwt () = Lwt_io.printl "You have liked this video" in
-          watch.liked <- true;
-          add_to_history watch user;
-          session_loop ()
-      | _ -> session_loop ()
+        match String.uppercase_ascii input with
+        | "Q" ->
+            add_to_history watch user;
+            Lwt.return_unit
+        | "L" ->
+            watch.liked <- not watch.liked;
+            let%lwt () =
+              Lwt_io.printl
+                ("You have "
+                ^ (if watch.liked then "" else "un")
+                ^ "liked this video")
+            in
+            add_to_history watch user;
+            session_input ()
+        | _ ->
+            add_to_history watch user;
+            session_loop ()
+      in
+      session_input ()
     with _ ->
       let%lwt () = Lwt_io.printl "No more videos :( " in
       Lwt.return_unit

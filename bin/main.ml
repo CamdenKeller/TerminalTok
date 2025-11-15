@@ -1,13 +1,23 @@
-open Terminal_tok
-open Types
+open Terminal_tok.Ascii_art
 
-let run () : 'a Lwt.t =
-  let user = { name = ""; vid_history = [] } in
-  let%lwt () = Lwt_io.printl "Instructions \n press enter to continue" in
-  let%lwt a = Lwt_io.read_line Lwt_io.stdin in
-  let%lwt ascii = Lwt.return (Recommender.recommend user).ascii in
-  let%lwt () = Lwt_io.printl ascii in
+let main () : unit Lwt.t =
+  (* 1. Print the welcome message *)
+  let%lwt () =
+    Lwt_io.printl "Welcome! Lwt (with lwt_ppx) will control execution."
+  in
 
-  Lwt.return ()
+  (* 2. Print the first piece of art *)
+  let%lwt () = Lwt_io.printl Art.a in
 
-let _ = Lwt_main.run (run ())
+  (* 3. Pause the execution for 2.0 seconds (non-blocking) *)
+  let%lwt () = Lwt_io.printl "\n...pausing for 2 seconds...\n" in
+  let%lwt () = Lwt_unix.sleep 2.0 in
+
+  (* 4. Print the second piece of art *)
+  let%lwt () = Lwt_io.printl "And now, the second piece:" in
+  let%lwt () = Lwt_io.printl Art.i in
+
+  (* 5. Finish and return *)
+  Lwt_io.printl "Goodbye!"
+
+let () = Lwt_main.run (main ())

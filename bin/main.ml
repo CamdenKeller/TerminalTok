@@ -15,8 +15,6 @@ let add_to_history (inter : interaction) (user : user) =
   in
   Hashtbl.replace user.genre_counts g (old + 1)
 
-  let old_count = 
-
 (* Play a video using mpv in ASCII mode *)
 let play_ascii_video (file : string) : unit Lwt.t =
   let command = ("mpv", [| "mpv"; "--vo=tct"; file |]) in
@@ -58,7 +56,7 @@ let run () : unit Lwt.t =
   in
   let%lwt () = Lwt_io.printl "Please enter your name here: " in
   let%lwt name = Lwt_io.read_line Lwt_io.stdin in
-  let user = { name; vid_history = [] } in
+  let user = { name; vid_history = []; genre_counts = Hashtbl.create 10} in
 
   let videos = load_video_list "videos" in
 

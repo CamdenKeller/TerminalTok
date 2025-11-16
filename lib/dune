@@ -1,2 +1,3 @@
 (library
- (name terminal_tok))
+ (name terminal_tok)
+ (libraries yojson))

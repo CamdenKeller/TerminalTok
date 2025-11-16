@@ -14,3 +14,7 @@ mpv --vo=tct <your_video_file>.mp4
    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 2. Install mpv
    brew install mpv
+
+# Credit:
+
+Camel ASCII art from https://www.asciiart.eu/

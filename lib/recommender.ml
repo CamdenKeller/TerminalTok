@@ -2,21 +2,23 @@ open Types
 
 (* takes in a user and video list and recommends a video *)
 let recommend (user : user) (videos : video list) : video option =
-
   if Hashtbl.length user.genre_counts = 0 then
-    None
-  else 
-    let top_genre, _ = 
-    Hashtbl.fold (fun genre count acc ->
-      match acc with
-      | None -> Some (genre, count)
-      | Some (_, best_count) when count > best_count ->
-        Some (genre, count)
-    | _ -> acc
-  ) user.genre_counts None
-  |> Option.get
-in
-let candidates = List.filter (fun v -> v.genre = top_genre) videos in
-match candidates with
+    if videos = [] then None
+    else Some (List.nth videos (Random.int (List.length videos)))
+  else
+    let top_genre =
+      Hashtbl.fold
+        (fun genre count best ->
+          match best with
+          | None -> Some (genre, count)
+          | Some (_, best_count) ->
+              if count > best_count then Some (genre, count) else best)
+        user.genre_counts None
+      |> Option.get |> fst
+    in
+    let candidates = List.filter (fun v -> v.genre = top_genre) videos in
+    match candidates with
     | [] -> None
-    | hd :: _ -> Some hd
+    | _ ->
+        let idx = Random.int (List.length candidates) in
+        Some (List.nth candidates idx)

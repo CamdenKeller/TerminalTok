@@ -1,5 +1,7 @@
 open Terminal_tok.Types
 open Terminal_tok.Ascii_art
+open Terminal_tok.Recommender
+open Terminal_tok.Json_parser
 open Terminal_tok
 open Lwt
 open Lwt_process
@@ -8,11 +10,8 @@ open Lwt_process
 let add_to_history (inter : interaction) (user : user) =
   user.vid_history <- inter :: user.vid_history;
 
-  let g = (inter.video).genre in
-    let old =
-      try Hashtbl.find user.genre_counts g
-    with Not_found -> 0
-  in
+  let g = inter.video.genre in
+  let old = try Hashtbl.find user.genre_counts g with Not_found -> 0 in
   Hashtbl.replace user.genre_counts g (old + 1)
 
 (* Play a video using mpv in ASCII mode *)
@@ -32,7 +31,6 @@ let load_video_list (folder : string) : string list =
 
 (** [run ()] starts the TerminalTok session *)
 let run () : unit Lwt.t =
-  let ascii_index = ref 0 in
   let video_index = ref 0 in
 
   let%lwt () =
@@ -56,56 +54,64 @@ let run () : unit Lwt.t =
   in
   let%lwt () = Lwt_io.printl "Please enter your name here: " in
   let%lwt name = Lwt_io.read_line Lwt_io.stdin in
-  let user = { name; vid_history = []; genre_counts = Hashtbl.create 10} in
+  let user = { name; vid_history = []; genre_counts = Hashtbl.create 10 } in
 
   let videos = load_video_list "videos" in
 
+  let ascii_lst =
+    Json_parser.parse_camels "../data/ascii.json"
+    (* List.map
+      (fun x -> { title = "camel"; ascii = x; genre = "camel" })
+      Ascii_art.ascii_lst *)
+    (* TODO for ruslan- LOAD from a data directory - *)
+  in
   let rec session_loop () =
     try%lwt
-      let watch =
-        { video = { title = "no name"; ascii = ""; genre = "" }; liked = false }
-      in
+      let video = Recommender.recommend user ascii_lst in
 
-      (* Play either video or ASCII art *)
-      let%lwt () =
-        if video_mode then (
-          if !video_index >= List.length videos then
-            Lwt_io.printl "No more videos :(" >>= fun () -> Lwt.return_unit
-          else
-            let video_file = List.nth videos !video_index in
-            incr video_index;
-            play_ascii_video video_file)
-        else
-          let ascii' =
-            List.nth Ascii_art.ascii_lst
-              (!ascii_index mod List.length Ascii_art.ascii_lst)
+      match video with
+      | None ->
+          let%lwt () = Lwt_io.printl "No videos; program ended" in
+          Lwt.return_unit
+      | Some v ->
+          let watch = { video = v; liked = false } in
+
+          (* Play either video or ASCII art *)
+          let%lwt () =
+            (* handles playing videos *)
+            if video_mode then (
+              if !video_index >= List.length videos then
+                Lwt_io.printl "No more videos :(" >>= fun () -> Lwt.return_unit
+              else
+                let video_file = List.nth videos !video_index in
+                incr video_index;
+                play_ascii_video video_file)
+            (* handles displaying ascii *)
+              else Lwt_io.printl v.ascii
           in
-          incr ascii_index;
-          Lwt_io.printl ascii'
-      in
 
-      (* Handle user input for this "Tok" *)
-      let rec session_input () =
-        let%lwt input = Lwt_io.read_line Lwt_io.stdin in
-        match String.uppercase_ascii input with
-        | "Q" ->
-            add_to_history watch user;
-            Lwt.return_unit
-        | "L" ->
-            watch.liked <- not watch.liked;
-            let%lwt () =
-              Lwt_io.printl
-                ("You have "
-                ^ (if watch.liked then "" else "un")
-                ^ "liked this video")
-            in
-            add_to_history watch user;
-            session_input ()
-        | _ ->
-            add_to_history watch user;
-            session_loop ()
-      in
-      session_input ()
+          (* Handle user input for this "Tok" *)
+          let rec session_input () =
+            let%lwt input = Lwt_io.read_line Lwt_io.stdin in
+            match String.uppercase_ascii input with
+            | "Q" ->
+                add_to_history watch user;
+                Lwt.return_unit
+            | "L" ->
+                watch.liked <- not watch.liked;
+                let%lwt () =
+                  Lwt_io.printl
+                    ("You have "
+                    ^ (if watch.liked then "" else "un")
+                    ^ "liked this video")
+                in
+                add_to_history watch user;
+                session_input ()
+            | _ ->
+                add_to_history watch user;
+                session_loop ()
+          in
+          session_input ()
     with _ ->
       let%lwt () = Lwt_io.printl "An error occurred with this video" in
       Lwt.return_unit

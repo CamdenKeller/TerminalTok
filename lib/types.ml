@@ -14,4 +14,5 @@ type interaction = {
 type user = {
   name : string;
   mutable vid_history : interaction list;
+  mutable genre_counts : (string, int) Hashtbl.t
 }

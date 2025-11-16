@@ -5,8 +5,17 @@ open Lwt
 open Lwt_process
 
 (* Track user history *)
-let add_to_history (vid : interaction) (user : user) =
-  user.vid_history <- vid :: user.vid_history
+let add_to_history (inter : interaction) (user : user) =
+  user.vid_history <- inter :: user.vid_history;
+
+  let g = (inter.video).genre in
+    let old =
+      try Hashtbl.find user.genre_counts g
+    with Not_found -> 0
+  in
+  Hashtbl.replace user.genre_counts g (old + 1)
+
+  let old_count = 
 
 (* Play a video using mpv in ASCII mode *)
 let play_ascii_video (file : string) : unit Lwt.t =

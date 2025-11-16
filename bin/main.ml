@@ -66,7 +66,7 @@ let run () : unit Lwt.t =
     let videos = load_video_list "videos" in
 
     let ascii_lst =
-      Json_parser.parse_camels "../data/ascii.json"
+      Json_parser.parse_camels "data/ascii.json"
       (* List.map
       (fun x -> { title = "camel"; ascii = x; genre = "camel" })
       Ascii_art.ascii_lst *)

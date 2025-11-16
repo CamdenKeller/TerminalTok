@@ -20,8 +20,8 @@ let line_num n =
 
 let jump n =
   let line = line_num n in
-  String.make 5 '\n' ^ "Score: " ^ string_of_int !score
-  ^ String.make (18 - line) '\n'
+  String.make 13 '\n' ^ "Score: " ^ string_of_int !score
+  ^ String.make (10 - line) '\n'
   ^ "   " ^ name ^ String.make line '\n'
   ^ if line = 0 then "" else "   "
 

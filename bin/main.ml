@@ -1,47 +1,85 @@
 open Terminal_tok.Types
 open Terminal_tok.Ascii_art
 open Terminal_tok
+open Lwt
+open Lwt_process
 
-(* TODO: resize window these values (for example)*)
-(* let term_rows = 100 let term_cols = 100 *)
-let index = ref 0
-
+(* Track user history *)
 let add_to_history (vid : interaction) (user : user) =
   user.vid_history <- vid :: user.vid_history
 
-(** [run ()] takes in a unit, starting the TerminalTok session, and returns the
-    promise that, when fulfilled, ends the session. *)
-let run () : 'a Lwt.t =
+(* Play a video using mpv in ASCII mode *)
+let play_ascii_video (file : string) : unit Lwt.t =
+  let command = ("mpv", [| "mpv"; "--vo=tct"; file |]) in
+  let process = Lwt_process.open_process_none command in
+  process#status >|= fun _ -> ()
+
+(* Load all video files from a folder *)
+let load_video_list (folder : string) : string list =
+  Sys.readdir folder |> Array.to_list
+  |> List.filter (fun f ->
+      Filename.check_suffix f ".mp4"
+      || Filename.check_suffix f ".mov"
+      || Filename.check_suffix f ".mkv")
+  |> List.map (Filename.concat folder)
+
+(** [run ()] starts the TerminalTok session *)
+let run () : unit Lwt.t =
+  let ascii_index = ref 0 in
+  let video_index = ref 0 in
+
   let%lwt () =
     Lwt_io.printlf
       "Instructions:\n\
        Once the session has begun...\n\
-      \  - Enter 'L' to like\n\
+      \  - Enter 'L' to like/unlike\n\
       \  - Enter 'Q' to quit the session\n\
-       |  - Enter anything else to go to the next Tok\n\
-      \      \n\
+       |  - Enter anything else to go to the next Tok\n\n\
        (press ENTER to begin session)"
   in
 
-  let%lwt _ = Lwt_io.read_line Lwt_io.stdin in
+  let%lwt () =
+    Lwt_io.printl "Select playback mode: (1) Normal ASCII (2) Video ASCII"
+  in
+  let%lwt choice = Lwt_io.read_line Lwt_io.stdin in
+  let video_mode =
+    match choice with
+    | "2" -> true
+    | _ -> false
+  in
   let%lwt () = Lwt_io.printl "Please enter your name here: " in
   let%lwt name = Lwt_io.read_line Lwt_io.stdin in
   let user = { name; vid_history = [] } in
+
+  let videos = load_video_list "videos" in
+
   let rec session_loop () =
     try%lwt
       let watch =
         { video = { title = "no name"; ascii = ""; genre = "" }; liked = false }
       in
 
-      (* When we have corrent recommend logic implemented... let%lwt ascii =
-         Lwt.return (Recommender.recommend user).ascii in *)
-      let%lwt ascii' = Lwt.return (List.nth Ascii_art.ascii_lst !index) in
-      let%lwt () = Lwt.return (incr index) in
-      let%lwt () = Lwt_io.printl ascii' in
+      (* Play either video or ASCII art *)
+      let%lwt () =
+        if video_mode then (
+          if !video_index >= List.length videos then
+            Lwt_io.printl "No more videos :(" >>= fun () -> Lwt.return_unit
+          else
+            let video_file = List.nth videos !video_index in
+            incr video_index;
+            play_ascii_video video_file)
+        else
+          let ascii' =
+            List.nth Ascii_art.ascii_lst
+              (!ascii_index mod List.length Ascii_art.ascii_lst)
+          in
+          incr ascii_index;
+          Lwt_io.printl ascii'
+      in
 
+      (* Handle user input for this "Tok" *)
       let rec session_input () =
         let%lwt input = Lwt_io.read_line Lwt_io.stdin in
-
         match String.uppercase_ascii input with
         | "Q" ->
             add_to_history watch user;
@@ -62,16 +100,10 @@ let run () : 'a Lwt.t =
       in
       session_input ()
     with _ ->
-      let%lwt () = Lwt_io.printl "No more videos :( " in
+      let%lwt () = Lwt_io.printl "An error occurred with this video" in
       Lwt.return_unit
   in
 
   session_loop ()
-
-(* TODOS: - Make it so that the user can like the video without moving on
-   (potentially put pattern match inside a helper function) - Added
-   specifications - re(optional) OCaml doesn't have a built in read on first
-   character, so find a way to do this using lower level functions in Unix
-   library (also ChatGPT), and add feature to unlike videos as well *)
 
 let _ = Lwt_main.run (run ())

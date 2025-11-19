@@ -1,0 +1,27 @@
+---
+group:
+  - name: Camden Keller
+    netid: cak285
+  - name: Ruben Lemmon
+    netid: rcl229
+  - name: Scott Fukuda
+    netid: sdf72
+  - name: Rishik Gowrishetti
+    netid: rg796
+  - name: Ruslan Black
+    netid: rsb368
+
+pm:
+  name: Lauren Pothuru
+  netid: lsp75
+publish: true
+title: TerminalTok
+git-repo: https://github.coecis.cornell.edu/sdf72/TerminalTok
+demo-video-url: https://youtu.be/afhYDpnnBP4
+desc: >
+  Not enough scrolling in your life?? Too much CS in your life? 
+  We can fix that with our fun, interactive TerminalTok! It supports 
+  posts, videos, and sharing videos directly from your terminal. Scroll, 
+  watch, and share without ever leaving the command line. And when you're 
+  offline, enjoy our very own version of the classic dinosaur game for even 
+  more terminal-approved fun under the guise of productivity!

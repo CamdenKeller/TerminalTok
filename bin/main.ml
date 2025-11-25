@@ -23,13 +23,14 @@ let play_ascii_video (file : string) : unit Lwt.t =
 let load_video_list (folder : string) : string list =
   Sys.readdir folder |> Array.to_list
   |> List.filter (fun f ->
-      Filename.check_suffix f ".mp4"
-      || Filename.check_suffix f ".mov"
-      || Filename.check_suffix f ".mkv")
+         Filename.check_suffix f ".mp4"
+         || Filename.check_suffix f ".mov"
+         || Filename.check_suffix f ".mkv")
   |> List.map (Filename.concat folder)
 
 (** [run ()] starts the TerminalTok session *)
 let run () : unit Lwt.t =
+  let num_clients = ref 0 in
   let video_index = ref 0 in
 
   let%lwt () =
@@ -62,7 +63,14 @@ let run () : unit Lwt.t =
     else
       let%lwt () = Lwt_io.printl "Please enter your name here: " in
       let%lwt name = Lwt_io.read_line Lwt_io.stdin in
-      let user = { name; vid_history = []; genre_counts = Hashtbl.create 10 } in
+      let user =
+        {
+          id = !num_clients + 1;
+          name;
+          vid_history = [];
+          genre_counts = Hashtbl.create 10;
+        }
+      in
 
       let videos = load_video_list "videos" in
 

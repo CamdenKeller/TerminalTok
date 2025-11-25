@@ -1,3 +1,4 @@
 (library
  (name terminal_tok)
- (libraries yojson))
+ (libraries yojson lwt.unix)
+ (preprocess (pps lwt_ppx)))

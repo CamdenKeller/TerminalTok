@@ -1,5 +1,5 @@
-(executable
- (public_name terminal-tok)
- (name main)
- (libraries terminal_tok str lwt lwt.unix)
+(executables
+ (public_names terminal-tok terminal-tok-server)
+ (names main server)
+ (libraries terminal_tok str lwt lwt.unix batteries)
  (preprocess (pps lwt_ppx)))

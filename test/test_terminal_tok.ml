@@ -13,7 +13,7 @@ let test_recommend_basic _ =
   Hashtbl.add user_gc "comedy" 2;
 
   let basic_user =
-    { id = 1; name = "greg"; vid_history = []; genre_counts = user_gc }
+    { name = "greg"; vid_history = []; genre_counts = user_gc }
   in
 
   let result = recommend basic_user videos in
@@ -30,12 +30,7 @@ let test_recommend_new_user _ =
   let videos = [ v1; v2 ] in
 
   let new_user =
-    {
-      id = 1;
-      name = "newbie";
-      vid_history = [];
-      genre_counts = Hashtbl.create 5;
-    }
+    { name = "newbie"; vid_history = []; genre_counts = Hashtbl.create 5 }
   in
 
   let result = recommend new_user videos in

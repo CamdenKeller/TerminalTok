@@ -30,12 +30,13 @@ let load_video_list (folder : string) : string list =
 
 (** [run ()] starts the TerminalTok session *)
 let run () : unit Lwt.t =
-  let num_clients = ref 0 in
   let video_index = ref 0 in
 
   let%lwt () =
     Lwt_io.printlf
       "Instructions:\n\
+      \  - Select Online mode to connect to the server and share Toks. You \
+       must first run 'dune exec bin/server.exe' to start the server.\n\
        Once the session has begun...\n\
       \  - Enter 'L' to like/unlike\n\
       \  - Enter 'Q' to quit the session\n\
@@ -62,20 +63,47 @@ let run () : unit Lwt.t =
     if video_mode then Lwt_io.printl "This feature is not yet implemented"
     else
       let%lwt () = Lwt_io.printl "Please enter your name here: " in
-      let%lwt name = Lwt_io.read_line Lwt_io.stdin in
-      let user =
-        {
-          id = !num_clients + 1;
-          name;
-          vid_history = [];
-          genre_counts = Hashtbl.create 10;
-        }
+
+      let localhost_5000 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5000) in
+      let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001) in
+
+      (* Note: we need two pairs of in/out channels: one for multiple *)
+      let%lwt cnt_server_in, cnt_server_out =
+        Lwt_io.open_connection localhost_5000
+      in
+      let%lwt msg_server_in, msg_server_out =
+        Lwt_io.open_connection localhost_5001
       in
 
-      let videos = load_video_list "videos" in
+      (* names function as unique keys*)
+      let%lwt clients = Lwt_io.read_line cnt_server_in in
+      let rec name_loop () =
+        let%lwt name = Lwt_io.read_line Lwt_io.stdin in
+        let%lwt () = Lwt_io.printl ("Other active users: " ^ clients) in
+        let%lwt () = Lwt_unix.sleep 1.0 in
+        if BatString.exists (clients ^ " ") (name ^ " ") then (
+          print_endline "Name taken. Please try again";
+          name_loop ())
+        else if BatString.exists name "\n   " || name = "" then (
+          print_endline "Please enter a non-empty name without\n   spaces";
+          name_loop ())
+        else Lwt.return name
+      in
 
+      let%lwt name = name_loop () in
+      let user = { name; vid_history = []; genre_counts = Hashtbl.create 10 } in
+
+      (* Write name to servers *)
+      let%lwt () = Lwt_io.write_line cnt_server_out name in
+      let%lwt () = Lwt_io.flush cnt_server_out in
+      let%lwt () = Lwt_io.write_line msg_server_out name in
+      let%lwt () = Lwt_io.flush msg_server_out in
+
+      let videos = load_video_list "videos" in
       let ascii_lst = Json_parser.parse_camels "data/ascii.json" in
       let rec session_loop () =
+        (* allows program to catch Cntrl C exit *)
+        Sys.catch_break true;
         try%lwt
           let video = Recommender.recommend user ascii_lst in
 
@@ -106,6 +134,11 @@ let run () : unit Lwt.t =
                 let%lwt input = Lwt_io.read_line Lwt_io.stdin in
                 match String.uppercase_ascii input with
                 | "Q" ->
+                    (* close channels to signal to server *)
+                    let%lwt () = Lwt_io.close cnt_server_out in
+                    let%lwt () = Lwt_io.close cnt_server_in in
+                    let%lwt () = Lwt_io.close msg_server_out in
+                    let%lwt () = Lwt_io.close msg_server_in in
                     add_to_history watch user;
                     Lwt.return_unit
                 | "L" ->
@@ -118,14 +151,71 @@ let run () : unit Lwt.t =
                     in
                     add_to_history watch user;
                     session_input ()
+                | "C" ->
+                    (* Signal to cnt server to return clients *)
+                    let%lwt () = Lwt_io.write_line cnt_server_out "" in
+                    let%lwt clients = Lwt_io.read_line cnt_server_in in
+                    let continue = ref true in
+
+                    let%lwt () =
+                      Lwt_io.printl
+                        ("Active users: " ^ clients
+                       ^ "\n\
+                          Please enter the name of the person you would like \
+                          to message")
+                    in
+                    let%lwt () =
+                      Lwt_io.printl "Start chatting! Enter 'R' to go back"
+                    in
+                    (* try%lwt *)
+                    let rec handle_message () =
+                      (* generate the promises to be run *)
+                      let server_prom =
+                        (* on completion of server read it calls the map *)
+                        let%lwt msg = Lwt_io.read_line msg_server_in in
+                        let%lwt () = Lwt_io.printl ("\n" ^ msg ^ "\n") in
+                        Lwt_io.print "Enter message: "
+                      in
+                      let input_prom =
+                        let%lwt msg = Lwt_io.read_line Lwt_io.stdin in
+                        if String.uppercase_ascii msg = "R" then (
+                          continue := false;
+                          Lwt.return_unit)
+                        else
+                          let%lwt () = Lwt_io.write_line msg_server_out msg in
+                          Lwt_io.flush msg_server_out
+                      in
+
+                      let%lwt message = Lwt.pick [ input_prom; server_prom ] in
+
+                      if !continue then handle_message () else Lwt.return_unit
+                    in
+                    let%lwt () = handle_message () in
+                    (* try%lwt let%lwt () = handle_message () with | Sys.Break
+                       -> let%lwt () = Lwt_io.close cnt_server_out in let%lwt ()
+                       = Lwt_io.close cnt_server_in in let%lwt () = Lwt_io.close
+                       msg_server_out in Lwt_io.close msg_server_in | Failure
+                       msg -> let%lwt () = Lwt_io.printl ("An error occurred
+                       with this video:" ^ msg) in Lwt.return_unit in *)
+                    (* with End_of_file -> Lwt.return_unit in *)
+
+                    session_loop ()
                 | _ ->
                     add_to_history watch user;
                     session_loop ()
               in
               session_input ()
-        with _ ->
-          let%lwt () = Lwt_io.printl "An error occurred with this video" in
-          Lwt.return_unit
+        with
+        | Sys.Break ->
+            let%lwt () = Lwt_io.close cnt_server_out in
+            let%lwt () = Lwt_io.close cnt_server_in in
+            let%lwt () = Lwt_io.close msg_server_out in
+            Lwt_io.close msg_server_in
+        | Failure msg ->
+            let%lwt () =
+              Lwt_io.printl ("An error occurred with this video:" ^ msg)
+            in
+            Lwt.return ()
       in
 
       session_loop ()
@@ -136,4 +226,7 @@ let run () : unit Lwt.t =
   in
   if online_mode then start_session () else start_dino ()
 
-let _ = Lwt_main.run (run ())
+let _ =
+  try Lwt_main.run (run ()) with
+  | Sys.Break -> print_endline "Thank you for joining!"
+  | _ -> print_endline "Failed to connect to server"

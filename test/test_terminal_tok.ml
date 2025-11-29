@@ -1,6 +1,7 @@
 open OUnit2
 open Terminal_tok.Recommender
 open Terminal_tok.Types
+open Terminal_tok.Encrypt
 
 let test_recommend_basic _ =
   let v1 = { title = "Action1"; ascii = ""; genre = "action" } in
@@ -13,7 +14,7 @@ let test_recommend_basic _ =
   Hashtbl.add user_gc "comedy" 2;
 
   let basic_user =
-    { id = 1; name = "greg"; vid_history = []; genre_counts = user_gc }
+    { name = "greg"; vid_history = []; genre_counts = user_gc }
   in
 
   let result = recommend basic_user videos in
@@ -30,12 +31,7 @@ let test_recommend_new_user _ =
   let videos = [ v1; v2 ] in
 
   let new_user =
-    {
-      id = 1;
-      name = "newbie";
-      vid_history = [];
-      genre_counts = Hashtbl.create 5;
-    }
+    { name = "newbie"; vid_history = []; genre_counts = Hashtbl.create 5 }
   in
 
   let result = recommend new_user videos in
@@ -49,11 +45,14 @@ let test_recommend_new_user _ =
     "New user with no history should receive a random video (not None)"
     is_valid_recommendation
 
+let test_encryption_functions _ = ignore (generate_private_key ())
+
 let tests =
   "test suite"
   >::: [
          "recommend basic" >:: test_recommend_basic;
          "recommend new user" >:: test_recommend_new_user;
+         "encryption functions" >:: test_encryption_functions;
        ]
 
 let _ = run_test_tt_main tests

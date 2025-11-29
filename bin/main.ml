@@ -81,11 +81,15 @@ let run () : unit Lwt.t =
         let%lwt name = Lwt_io.read_line Lwt_io.stdin in
         let%lwt () = Lwt_io.printl ("Other active users: " ^ clients) in
         let%lwt () = Lwt_unix.sleep 1.0 in
-        if BatString.exists clients name || name = " " || name = "" then (
+        if BatString.exists (clients ^ " ") (name ^ " ") then (
           print_endline "Name taken. Please try again";
+          name_loop ())
+        else if BatString.exists name "\n   " || name = "" then (
+          print_endline "Please enter a non-empty name without\n   spaces";
           name_loop ())
         else Lwt.return name
       in
+
       let%lwt name = name_loop () in
       let user = { name; vid_history = []; genre_counts = Hashtbl.create 10 } in
 
@@ -101,29 +105,6 @@ let run () : unit Lwt.t =
         (* allows program to catch Cntrl C exit *)
         Sys.catch_break true;
         try%lwt
-          let%lwt fst_prom =
-            Lwt.pick
-              [
-                (let%lwt () = Lwt_unix.sleep 0.2 in
-                 Lwt.return "No msg");
-                (try%lwt Lwt_io.read_line msg_server_in
-                 with _ ->
-                   let%lwt () =
-                     Lwt_io.printl "The messaged user is no longer connected"
-                   in
-                   let%lwt () = Lwt_unix.sleep 1.0 in
-                   Lwt.return "No msg");
-              ]
-          in
-          let%lwt () =
-            if fst_prom <> "No msg" then
-              let%lwt () =
-                Lwt_io.printl ("Message received from " ^ fst_prom)
-              in
-              Lwt_unix.sleep 2.5
-            else Lwt_io.printl "chopppy"
-          in
-
           let video = Recommender.recommend user ascii_lst in
 
           match video with
@@ -171,43 +152,52 @@ let run () : unit Lwt.t =
                     add_to_history watch user;
                     session_input ()
                 | "C" ->
-                    let rec name_loop () =
-                      (* Signal to cnt server to return clients *)
-                      let%lwt () = Lwt_io.write_line cnt_server_out "" in
-                      let%lwt clients = Lwt_io.read_line cnt_server_in in
+                    (* Signal to cnt server to return clients *)
+                    let%lwt () = Lwt_io.write_line cnt_server_out "" in
+                    let%lwt clients = Lwt_io.read_line cnt_server_in in
+                    let continue = ref true in
 
-                      let%lwt () =
-                        Lwt_io.printl
-                          ("Active users: " ^ clients
-                         ^ "\n\
-                            Please enter the name of the person you would like \
-                            to message")
-                      in
-                      try%lwt
-                        let%lwt rcpt_name = Lwt_io.read_line Lwt_io.stdin in
-
-                        (* make sure its a valid name *)
-                        if
-                          (not (BatString.exists clients rcpt_name))
-                          || rcpt_name = " " || rcpt_name = ""
-                        then
-                          let%lwt () = Lwt_io.printl "Invalid name\n" in
-                          name_loop ()
-                        else
-                          let%lwt () =
-                            Lwt_io.printl "What would you like to say:"
-                          in
-                          let%lwt msg = Lwt_io.read_line Lwt_io.stdin in
-                          let%lwt () =
-                            Lwt_io.write_line msg_server_out rcpt_name
-                          in
-                          let%lwt () = Lwt_io.flush msg_server_out in
-                          let%lwt () = Lwt_io.write_line msg_server_out msg in
-                          let%lwt () = Lwt_io.printl "ii desu yo" in
-                          Lwt_io.flush msg_server_out
-                      with End_of_file -> Lwt_io.printl "yokunai"
+                    let%lwt () =
+                      Lwt_io.printl
+                        ("Active users: " ^ clients
+                       ^ "\n\
+                          Please enter the name of the person you would like \
+                          to message")
                     in
-                    let%lwt () = name_loop () in
+                    let%lwt () =
+                      Lwt_io.printl "Start chatting! Enter 'R' to go back"
+                    in
+                    (* try%lwt *)
+                    let rec handle_message () =
+                      (* generate the promises to be run *)
+                      let server_prom =
+                        (* on completion of server read it calls the map *)
+                        let%lwt msg = Lwt_io.read_line msg_server_in in
+                        let%lwt () = Lwt_io.printl ("\n" ^ msg ^ "\n") in
+                        Lwt_io.print "Enter message: "
+                      in
+                      let input_prom =
+                        let%lwt msg = Lwt_io.read_line Lwt_io.stdin in
+                        if String.uppercase_ascii msg = "R" then (
+                          continue := false;
+                          Lwt.return_unit)
+                        else
+                          let%lwt () = Lwt_io.write_line msg_server_out msg in
+                          Lwt_io.flush msg_server_out
+                      in
+
+                      let%lwt message = Lwt.pick [ input_prom; server_prom ] in
+
+                      if !continue then handle_message () else Lwt.return_unit
+                    in
+                    let%lwt () = handle_message () in
+                    (* try%lwt let%lwt () = handle_message () with | Sys.Break
+                       -> let%lwt () = Lwt_io.close cnt_server_out in let%lwt ()
+                       = Lwt_io.close cnt_server_in in let%lwt () = Lwt_io.close
+                       msg_server_out in Lwt_io.close msg_server_in | Failure
+                       msg -> let%lwt () = Lwt_io.printl ("An error occurred
+                       with this video:" ^ msg) in Lwt.return_unit in *)
+                    (* with End_of_file -> Lwt.return_unit in *)
 
                     session_loop ()
                 | _ ->
@@ -225,9 +215,8 @@ let run () : unit Lwt.t =
             let%lwt () =
               Lwt_io.printl ("An error occurred with this video:" ^ msg)
             in
-            Lwt_io.printl "chopppy"
+            Lwt.return ()
       in
-      let%lwt () = Lwt_io.printl "byebye" in
 
       session_loop ()
   in
@@ -237,7 +226,7 @@ let run () : unit Lwt.t =
   in
   if online_mode then start_session () else start_dino ()
 
-let _ = Lwt_main.run (run ())
-
-(* FIX THIS; if you try to message after someone leaves, its bad!! ALSO, it
-   sometimes says the wrong name *)
+let _ =
+  try Lwt_main.run (run ()) with
+  | Sys.Break -> print_endline "Thank you for joining!"
+  | _ -> print_endline "Failed to connect to server"

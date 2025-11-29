@@ -10,24 +10,16 @@ let string_of_addr = function
   | ADDR_INET (ip, port) ->
       Printf.sprintf "%s:%d" (Unix.string_of_inet_addr ip) port
 
-let format_clients (clients : client list) =
-  (* let string = ref "ID | Name " in *)
-  let string = ref "" in
-  List.iter
-    (fun x -> string := !string ^ "[ID: " ^ x.id ^ ", Name: " ^ x.name ^ "], ")
-    (List.rev clients);
-  !string
+(* let format_clients (clients : client list) = (* let string = ref "ID | Name "
+   in *) let string = ref "" in List.iter (fun x -> string := !string ^ "[ID: "
+   ^ x.id ^ ", Name: " ^ x.name ^ "], ") (List.rev clients); !string
 
-let print_client cl =
-  let msg_in_outs =
-    match (cl.msg_in, cl.msg_out) with
-    | Some _, Some _ -> "CNT_IN: exists, CNT_OUT: exists"
-    | Some _, None -> "CNT_IN: exists, CNT_OUT: null"
-    | None, Some _ -> "CNT_IN: null, CNT_OUT: exists"
-    | None, None -> "CNT_IN: null, CNT_OUT: null"
-  in
-  Lwt_io.printl
-    ("Name: " ^ cl.name ^ ", Addr: " ^ cl.cnt_addr ^ ", in/out: " ^ msg_in_outs)
+   let print_client cl = let msg_in_outs = match (cl.msg_in, cl.msg_out) with |
+   Some _, Some _ -> "CNT_IN: exists, CNT_OUT: exists" | Some _, None ->
+   "CNT_IN: exists, CNT_OUT: null" | None, Some _ -> "CNT_IN: null, CNT_OUT:
+   exists" | None, None -> "CNT_IN: null, CNT_OUT: null" in Lwt_io.printl
+   ("Name: " ^ cl.name ^ ", Addr: " ^ cl.cnt_addr ^ ", in/out: " ^
+   msg_in_outs) *)
 
 let format_client_names (clients : client list) =
   (* let string = ref "ID | Name " in *)
@@ -35,7 +27,7 @@ let format_client_names (clients : client list) =
   List.iter (fun x -> string := !string ^ " " ^ x.name) (List.rev clients);
   !string
 
-let write_to_all_clients =
+let write_all_clients_to_all =
   Lwt_list.iter_p
     (fun client ->
       let%lwt () =
@@ -52,13 +44,13 @@ let run_counting_server sockadr () =
     in
     let%lwt () = Lwt_io.flush client_out in
 
+    let%lwt () = Lwt_io.printl "sent!" in
+
     let address_string = string_of_addr client_addr in
-    let id = string_of_int !num_clients in
     num_clients := !num_clients + 1;
     let%lwt name = Lwt_io.read_line client_in in
     let client =
       {
-        id;
         name;
         cnt_addr = address_string;
         cnt_in = client_in;
@@ -89,9 +81,9 @@ let run_counting_server sockadr () =
     try%lwt handle_message ()
     with _ ->
       (* Handle clients leaving *)
-      let new_clients = List.filter (fun x -> x.id <> id) !all_clients in
+      let new_clients = List.filter (fun x -> x.name <> name) !all_clients in
       all_clients := new_clients;
-      write_to_all_clients
+      write_all_clients_to_all
   in
   let server () =
     let%lwt running_server =
@@ -112,34 +104,67 @@ let run_messaging_server sockadr () =
     this_client.msg_addr <- Some (string_of_addr client_addr);
     this_client.msg_in <- Some client_in;
     this_client.msg_out <- Some client_out;
+    let%lwt () =
+      Lwt_list.iter_p
+        (fun client ->
+          match (client.msg_in, client.msg_out) with
+          | Some msg_in, Some msg_out ->
+              let%lwt () =
+                Lwt_io.write_line msg_out (name ^ " has entered the chat.")
+              in
+              Lwt_io.flush msg_out
+          | _ -> Lwt.return_unit)
+        !all_clients
+    in
 
     let rec receive_message () =
-      try%lwt
-        let%lwt rcpt_name = Lwt_io.read_line client_in in
-        let%lwt () = print_client this_client in
-
-        let%lwt msg = Lwt_io.read_line client_in in
-        let%lwt () = Lwt_io.printl ("message to " ^ rcpt_name ^ msg) in
-        let%lwt () = Lwt_io.printl (format_clients !all_clients) in
-
-        let target_client =
-          List.find (fun client -> client.name = rcpt_name) !all_clients
-        in
-        print_endline (format_clients [ target_client ]);
-
-        match target_client.msg_out with
-        | None -> Lwt.return ()
-        | Some msg_out ->
-            let%lwt () = Lwt_io.write_line msg_out (rcpt_name ^ ": " ^ msg) in
-
-            receive_message ()
-      with _ -> Lwt.return_unit
+      let%lwt client_message = Lwt_io.read_line client_in in
+      let%lwt () = Lwt_io.flush client_out in
+      let%lwt () =
+        Lwt_io.printlf "Message received from client '%s': %s" name
+          client_message
+      in
+      let%lwt () =
+        Lwt_list.iter_p
+          (fun client ->
+            match (client.msg_in, client.msg_out) with
+            | Some msg_in, Some msg_out ->
+                let%lwt () =
+                  Lwt_io.write_line msg_out (name ^ " says " ^ client_message)
+                in
+                Lwt_io.flush msg_out
+            | _ -> Lwt.return_unit)
+          !all_clients
+      in
+      receive_message ()
     in
-    try%lwt receive_message ()
-    with _ ->
-      let new_clients = List.filter (fun x -> x.name <> name) !all_clients in
-      all_clients := new_clients;
-      write_to_all_clients
+    try%lwt receive_message () with
+    | End_of_file ->
+        (* Handle clients leaving *)
+        (* let%lwt () = format_client_names !all_clients in *)
+        let%lwt () = Lwt_io.print "\n" in
+        let%lwt () = Lwt_io.printl (string_of_addr client_addr) in
+
+        let%lwt removed_client =
+          (* filter out this client from the all_clients list if it catches a
+             break *)
+          Lwt.return (List.filter (fun x -> x.name = name) !all_clients)
+        in
+        let%lwt () =
+          Lwt_list.iter_p (fun x -> Lwt_io.print (x.name ^ " ")) removed_client
+        in
+        let%lwt () =
+          Lwt_io.printf
+            "(%s) has left the chat. Reason of departure: End of file\n" name
+        in
+
+        let new_clients = List.filter (fun x -> x.name <> name) !all_clients in
+        all_clients := new_clients;
+        Lwt.return_unit
+    | _ ->
+        Lwt_io.printf
+          "%s (%s) has left the chat. Reason of departure: Unknown\n" name
+          (string_of_addr client_addr)
   in
   let server () =
     let%lwt () = Lwt_io.printl "Messaging server started" in

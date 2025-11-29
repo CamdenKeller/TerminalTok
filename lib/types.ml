@@ -19,7 +19,7 @@ type user = {
 
 (* Limited version of user for chat usage *)
 type client = {
-  id : string;
+  (* id : string; *)
   name : string;
   cnt_addr : string;
   cnt_in : Lwt_io.input_channel;

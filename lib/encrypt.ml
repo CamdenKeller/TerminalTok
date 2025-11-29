@@ -1,5 +1,6 @@
 (* Diffie-Hellman Encryption Algorithm *)
 open Z
+open Mirage_crypto_rng
 
 (* large prime (public) *)
 let p =
@@ -13,12 +14,23 @@ let p =
 (* generator number *)
 let g = Z.of_int 2
 
+(* Mirage_crypto_rng.set_default_generator (Mirage_crypto_rng.default_generator ()) *)
+(* let group = { p; gg = g; q = None } *)
+
+(* let secret = { Nocrypto.} *)
+
 (* in the main.ml have each user randomly generate a private key *)
+
+let generate_private_key () =
+  let fill (buf : bytes) (pos : bits) (len : bits) =
+    let cs = Mirage_crypto_rng.generate len in
+    Cstruct.blit_from_bytes buf 0 cs pos len
+  in
+  Z.random_int_gen ~fill p
 
 let get_public_value (private_key : Z.t) : Z.t = Z.powm g private_key p
 
 let get_shared_secret (msngr_pub_val : Z.t) (private_key : Z.t) : Z.t =
   Z.powm msngr_pub_val (private_key : Z.t) p
-
 (* let get_key (geshared_secret : z) : string??? = let encrypt_msg (msg :
    string) (key : string) : string = aes_encrypt *)

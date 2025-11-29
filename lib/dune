@@ -1,4 +1,4 @@
 (library
  (name terminal_tok)
- (libraries yojson lwt.unix zarith)
+ (libraries yojson lwt.unix mirage-crypto-rng zarith)
  (preprocess (pps lwt_ppx)))

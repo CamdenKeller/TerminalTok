@@ -40,6 +40,7 @@ let run () : unit Lwt.t =
        Once the session has begun...\n\
       \  - Enter 'L' to like/unlike\n\
       \  - Enter 'Q' to quit the session\n\
+      \  - Enter 'C' to enter an encrypted chat with other users\n\
       \  - Enter anything else to go to the next Tok\n\n\
        (press ENTER to begin session)"
   in

@@ -21,6 +21,7 @@ type user = {
 type client = {
   (* id : string; *)
   name : string;
+  mutable pub_key : string option;
   cnt_addr : string;
   cnt_in : Lwt_io.input_channel;
   cnt_out : Lwt_io.output_channel;

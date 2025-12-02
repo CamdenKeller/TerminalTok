@@ -240,7 +240,15 @@ let run () : unit Lwt.t =
       session_loop ()
   in
   let start_dino () : unit Lwt.t =
-    Lwt_io.printl "Press ENTER to start the game and jump" >>= fun () ->
+    Lwt_io.printl
+      "\n\
+       Press ENTER to start the game.\n\
+       Jump over the 67s and try to get the highest score you can!\n\
+       UP ARROW (↑) or ENTER: Jump\n\
+       DOWN ARROW (↓): Switch between standing position and sliding position\n\
+       RIGHT ARROW (→): Front flip\n\
+       LEFT ARROW (←): Backflip"
+    >>= fun () ->
     Lwt_io.read_line_opt Lwt_io.stdin >>= fun _ -> Dinotok.run_dino ()
   in
   if online_mode then start_session () else start_dino ()

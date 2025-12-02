@@ -68,8 +68,9 @@ let obs_string () =
   !obs_line
 
 let output line pos =
+  let third_line = if pos = pos3 || pos = pos7 || pos = slide then 1 else 0 in
   String.make 20 '\n' ^ "Score: " ^ string_of_int !score
-  ^ String.make (10 - line) '\n'
+  ^ String.make (10 - line + third_line) '\n'
   ^ "   " ^ pos ^ String.make line '\n'
   ^ if line = 0 then "" else "      "
 

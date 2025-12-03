@@ -255,6 +255,9 @@ let run () : unit Lwt.t =
   if online_mode then start_session () else start_dino ()
 
 let _ =
-  try Lwt_main.run (run ()) with
-  | Sys.Break -> print_endline "Thank you for joining!"
+  try 
+  (* this code allows us to run bin/server.ml from main.ml*)
+  let _ : Lwt_process.process_none = Lwt_process.open_process_none ("", [| "dune"; "exec"; "bin/server.exe" |]) in 
+  Lwt_main.run (run ()) with
+  | Sys.Break -> print_endline "\nThank you for joining!"
   | _ -> print_endline "Failed for unknown reason"

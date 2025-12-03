@@ -19,7 +19,18 @@
  (name terminal-tok)
  (synopsis "A short synopsis")
  (description "A longer description")
- (depends ocaml)
+ (depends 
+    ocaml
+    yojson
+    lwt
+    zarith
+    cryptokit
+    batteries
+    csv
+    ounit2
+    lwt_ppx
+    ppx_inline_test
+    bisect_ppx)
  (tags
   ("add topics" "to describe" your project)))
 

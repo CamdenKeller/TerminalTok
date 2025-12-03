@@ -30,7 +30,6 @@ let write_all_clients_to_all =
 
 let run_counting_server sockadr () =
   (* Define server keys*)
-  let%lwt () = Lwt_io.printl "Counting server started" in
   let client_handler client_addr (client_in, client_out) : unit Lwt.t =
     let%lwt () = Lwt_io.write_line client_out (format_clients !all_clients) in
     let%lwt () = Lwt_io.flush client_out in
@@ -190,7 +189,6 @@ let run_messaging_server sockadr () =
           (string_of_addr client_addr)
   in
   let server () =
-    let%lwt () = Lwt_io.printl "Messaging server started" in
 
     let%lwt running_server =
       Lwt_io.establish_server_with_client_address sockadr client_handler

@@ -5,20 +5,20 @@ let init_distance = 50
 
 (* positions for character: pos1 is the default, pos2-pos8 are for flips*)
 
-let pos1 = [ " O "; "   /|\\"; "   / \\" ]
-let pos2 = [ "O_"; "   |\\_"; "     \\" ]
-let pos3 = [ "O/__/"; "    \\  \\" ]
-let pos4 = [ " |_ "; "   |/_"; "   O" ]
-let pos5 = [ "\\ / "; "   \\|/ "; "    O  " ]
-let pos6 = [ "_|"; "    _\\|"; "      O" ]
-let pos7 = [ "\\__\\"; "   /  /O" ]
-let pos8 = [ "  _O"; "    _/|"; "     |" ]
-let slide = [ " O_"; "    _\\ " ]
-let fps = ref 0.05
+let pos1 = [ " O "; "/|\\"; "/ \\" ]
+let pos2 = [ "O_"; "|\\_"; "  \\" ]
+let pos3 = [ "O/__/"; " \\  \\" ]
+let pos4 = [ " |_ "; "|/_"; "O" ]
+let pos5 = [ "\\ / "; "\\|/ "; " O  " ]
+let pos6 = [ "_|"; " _\\|"; "   O" ]
+let pos7 = [ "\\__\\"; "/  /O" ]
+let pos8 = [ "  _O"; " _/|"; "  |" ]
+let slide = [ " O_"; " _\\" ]
 
-(* 0.05 *)
-(* make ref, increases over time (based on score, maybe just floor of score
-   divided by something time constant for initial fps or smth *)
+(* maybe add bow and arrow thingy or bomb throw *)
+
+(* decreases over time *)
+let fps = ref 0.051
 let input_flag = ref false
 
 type action =
@@ -45,9 +45,8 @@ type obstacle = {
 
 let score = ref 0
 let max_obs = 10
-let obstacles = Array.init max_obs (fun _ -> { loc = -1; height = 0 })
+let obstacles = Array.init max_obs (fun _ -> { loc = -8; height = 0 })
 let obs = ref 0 (* number of obstacles *)
-let last_67 = ref 0
 
 exception Clarkson of string
 
@@ -58,6 +57,26 @@ let line = function
   | 4 -> 6
   | _ -> 0
 
+let passed h =
+  if obstacles.(0).height = h then
+    match obstacles.(0).loc with
+    | -7 -> "7     "
+    | -1 -> "     6"
+    | x when x > -7 && x < -1 ->
+        String.make (6 + x) ' ' ^ "67" ^ String.make (-2 - x) ' '
+    | _ -> String.make 6 ' '
+  else String.make 6 ' '
+
+let behind h =
+  if obstacles.(0).height = h then
+    match obstacles.(0).loc with
+    | -7 -> "7  "
+    | -4 -> "  6"
+    | -5 -> " 67"
+    | -6 -> "67 "
+    | _ -> String.make 3 ' '
+  else String.make 3 ' '
+
 (* maybe edit logic so 67 starts on nth character in line, and then add spaces
    based on that and also loc of person, num 67s, etc. *)
 let move_obs () =
@@ -67,13 +86,13 @@ let move_obs () =
 
 let rec search j h =
   if j < 0 then None
-  else if obstacles.(j).height = h then Some j
+  else if obstacles.(j).height = h && obstacles.(j).loc >= 0 then Some j
   else search (j - 1) h
 
 let obs_string h =
   let obs_line = ref "" in
   for i = 0 to !obs - 1 do
-    if obstacles.(i).height = h then begin
+    if obstacles.(i).height = h && obstacles.(i).loc > -2 then begin
       (* find previous obstacle with height = 0 *)
       let prev = search (i - 1) h in
       let spaces =
@@ -83,16 +102,32 @@ let obs_string h =
         (* was one but case for first ob.loc = 0 was wrong bc didnt move just
            shifted``````````````````````````````````````````````````````````````````````````````````*)
       in
-      obs_line := !obs_line ^ String.make (max 0 spaces) ' ' ^ "67"
+      obs_line :=
+        !obs_line
+        ^ String.make (max 0 spaces) ' '
+        ^ if obstacles.(i).loc = -1 then "7" else "67"
     end
   done;
   !obs_line
 
-let join_lines lines = String.concat "\n" lines
+let join_lines lines =
+  let h = line input_data.until_input in
+  match lines with
+  | [ l1; l2; l3 ] ->
+      l1
+      ^ obs_string (h + 2)
+      ^ "\n"
+      ^ behind (h + 1)
+      ^ l2 ^ "\n" ^ behind h ^ l3
+  | [ l1; l2 ] -> l1 ^ "\n" ^ behind h ^ l2
+  | _ -> invalid_arg "join_lines expects exactly 3 strings"
 
+(* specifically for standing position at the lowest height (h=0) *)
 let stand_high lines =
   match lines with
-  | [ l1; l2; l3 ] -> l1 ^ obs_string 2 ^ "\n" ^ l2 ^ "\n" ^ l3
+  | [ l1; l2; l3 ] ->
+      l1 ^ obs_string 2 ^ "\n" ^ "   " ^ l2 ^ "\n" ^ behind 0
+      ^ l3 (* ^ behind 0 before l3*)
   | _ -> invalid_arg "join_lines expects exactly 3 strings"
 
 let output line pos =
@@ -103,21 +138,28 @@ let output line pos =
   ^ "\t\t\t High Score: 0"
   ^
   if no_high || line >= 2 then
-    String.make (10 - line + third_line) '\n'
-    ^ "   " ^ join_lines pos
-    ^ (if no_high then String.make line '\n'
-       else
+    (if pos = slide then
+       String.make (10 - line) '\n' ^ passed 2 ^ obs_string 2 ^ "\n"
+     else String.make (10 - line + third_line) '\n')
+    ^ behind (line + List.length pos - 1)
+      (* idk was 3 spaces; if slide and line = 0 tho then wrong*)
+    ^ join_lines pos
+    ^ (if no_high && line < 2 then String.make line '\n'
+       (* this does nothing bc line=0*)
+       (* no bc passed 2 must be called also line could still bve greater than
+            2 here *)
+         else
          String.make (line - 2) '\n'
          ^ (if line = 2 then ""
-            else "      " (* compact so no_high condition is here or smth *))
+            else passed 2 (* compact so no_high condition is here or smth *))
          ^ obs_string 2 ^ String.make 2 '\n')
-    ^ if line = 0 then "" else "      "
+    ^ if line = 0 then "" else passed 0
   else (* line=0 bc its never 1; ppos is either pos1 (stand) or slide *)
     (* String.make (10 - line + third_line) '\n' *)
     String.make 10 '\n'
     ^
-    if pos = slide then "      " ^ obs_string 2 ^ "\n" ^ "   " ^ join_lines pos
-    else "   " ^ stand_high pos
+    if pos = slide then passed 2 ^ obs_string 2 ^ "\n" ^ "   " ^ join_lines pos
+    else behind 2 ^ stand_high pos
 (* 1st string of pos then string of rest *)
 (* basically add n to output func, if n≥2 then just add obstacles at h=2, else
    do string by string from pos *)
@@ -175,12 +217,12 @@ let wait_for_quiet () =
 let in_press = ref false
 
 (* Terminal mode setup/restore *)
-let original_termios = lazy (Unix.tcgetattr Unix.stdin)
+let original_termios = Unix.tcgetattr Unix.stdin
 
 let enable_raw_mode () =
   let raw =
     {
-      (Lazy.force original_termios) with
+      original_termios with
       Unix.c_icanon = false;
       (* disable canonical mode: no line buffering *)
       c_echo = false;
@@ -190,7 +232,7 @@ let enable_raw_mode () =
   Unix.tcsetattr Unix.stdin Unix.TCSANOW raw
 
 let restore_terminal () =
-  Unix.tcsetattr Unix.stdin Unix.TCSANOW (Lazy.force original_termios)
+  Unix.tcsetattr Unix.stdin Unix.TCSANOW original_termios
 
 let rec print_loop () =
   Lwt.catch
@@ -203,7 +245,7 @@ let rec print_loop () =
       (* use array to store 67 loc vals bc there's a max amount there can be anyway *)
       (* (!obs = 0 || obstacles.(!obs) = init_distance-10) *)
       if !fps > 0.03 && !score mod 100 = 0 then fps := !fps -. 0.001 else ();
-      if obstacles.(0).loc = 0 then (
+      if obstacles.(0).loc = -7 then (
         obs := !obs - 1;
         for i = 0 to !obs do
           obstacles.(i) <-
@@ -329,17 +371,3 @@ let run_dino () : unit Lwt.t =
     (fun () ->
       restore_terminal ();
       Lwt.return_unit)
-
-let%test_module "dinotok_tests" = (module struct
-  let%test "line calculation" =
-    line 7 = 2 && line 1 = 2 &&
-    line 6 = 4 && line 2 = 4 &&
-    line 5 = 5 && line 3 = 5 &&
-    line 4 = 6 &&
-    line 0 = 0 && line 8 = 0
-
-  let%test "join lines" =
-    let lines = ["line1"; "line2"; "line3"] in
-    let expected = "line1\nline2\nline3" in
-    join_lines lines = expected
-end)

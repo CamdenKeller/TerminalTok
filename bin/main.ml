@@ -20,15 +20,6 @@ let play_ascii_video (file : string) : unit Lwt.t =
   let process = Lwt_process.open_process_none command in
   process#status >|= fun _ -> ()
 
-(* Load all video files from a folder *)
-let load_video_list (folder : string) : string list =
-  Sys.readdir folder |> Array.to_list
-  |> List.filter (fun f ->
-         Filename.check_suffix f ".mp4"
-         || Filename.check_suffix f ".mov"
-         || Filename.check_suffix f ".mkv")
-  |> List.map (Filename.concat folder)
-
 (** [run ()] starts the TerminalTok session *)
 let run () : unit Lwt.t =
   let video_index = ref 0 in
@@ -62,42 +53,41 @@ let run () : unit Lwt.t =
       | "2" -> true
       | _ -> false
     in
-    if video_mode then Lwt_io.printl "This feature is not yet implemented"
-    else
-      let%lwt () = Lwt_io.printl "Please enter your name here: " in
+    
+    let%lwt () = Lwt_io.printl "Please enter your name here: " in
 
-      let localhost_5000 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5000) in
-      let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001) in
+    let localhost_5000 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5000) in
+    let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001) in
 
-      (* Note: we need two pairs of in/out channels: one for multiple *)
-      let%lwt cnt_server_in, cnt_server_out =
-        Lwt_io.open_connection localhost_5000
-      in
-      let%lwt msg_server_in, msg_server_out =
-        Lwt_io.open_connection localhost_5001
-      in
+    (* Note: we need two pairs of in/out channels: one for multiple *)
+    let%lwt cnt_server_in, cnt_server_out =
+      Lwt_io.open_connection localhost_5000
+    in
+    let%lwt msg_server_in, msg_server_out =
+      Lwt_io.open_connection localhost_5001
+    in
 
-      (* names function as unique keys*)
-      let%lwt clients = Lwt_io.read_line cnt_server_in in
+    (* names function as unique keys*)
+    let%lwt clients = Lwt_io.read_line cnt_server_in in
 
-      (* let clients = Utils.format_names clients in *)
-      let rec name_loop () =
-        let%lwt name = Lwt_io.read_line Lwt_io.stdin in
-        let%lwt () = Lwt_io.printl ("Other active users: " ^ clients) in
-        let%lwt () = Lwt_unix.sleep 1.0 in
-        if BatString.exists (clients ^ " ") (name ^ " ") then (
-          print_endline "Name taken. Please try again";
-          name_loop ())
-        else if
-          BatString.(exists name " " || exists name "[" || exists name "]")
-          || name = ""
-        then (
-          print_endline
-            "Please enter a non-empty name without spaces or brackets";
-          name_loop ())
-        else Lwt.return name
-      in
-      let%lwt name = name_loop () in
+    (* let clients = Utils.format_names clients in *)
+    let rec name_loop () =
+      let%lwt name = Lwt_io.read_line Lwt_io.stdin in
+      let%lwt () = Lwt_io.printl ("Other active users: " ^ clients) in
+      let%lwt () = Lwt_unix.sleep 1.0 in
+      if BatString.exists (clients ^ " ") (name ^ " ") then (
+        print_endline "Name taken. Please try again";
+        name_loop ())
+      else if
+        BatString.(exists name " " || exists name "[" || exists name "]")
+        || name = ""
+      then (
+        print_endline
+          "Please enter a non-empty name without spaces or brackets";
+        name_loop ())
+      else Lwt.return name
+    in
+    let%lwt name = name_loop () in
       let user =
         match Storage.load_user name with
         | Some u ->
@@ -127,7 +117,7 @@ let run () : unit Lwt.t =
 
       let%lwt () = Lwt_io.write_line msg_server_out name in
       let%lwt () = Lwt_io.flush msg_server_out in
-      let videos = load_video_list "videos" in
+      let videos = Storage.load_video_list "videos" in
       let ascii_lst = Json_parser.parse_camels "data/ascii.json" in
       let rec session_loop () =
         (* allows program to catch Cntrl C exit *)

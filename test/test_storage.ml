@@ -15,13 +15,13 @@ let test_save_and_load_user _ =
   match Storage.load_user "TestUser" with
   | None -> assert_failure "Failed to load saved user"
   | Some loaded_user ->
-      assert_equal "TestUser" loaded_user.name;
-      assert_equal 1 (List.length loaded_user.vid_history);
+      assert_equal "TestUser" loaded_user.name ~printer:(fun x -> x);
+      assert_equal 1 (List.length loaded_user.vid_history) ~printer:string_of_int;
       let loaded_interaction = List.hd loaded_user.vid_history in
-      assert_equal "Action1" loaded_interaction.video.title;
-      assert_equal true loaded_interaction.liked;
-      assert_equal 10.5 loaded_interaction.watchtime;
-      assert_equal 5 (Hashtbl.find loaded_user.genre_counts "action")
+      assert_equal "Action1" loaded_interaction.video.title ~printer:(fun x -> x);
+      assert_equal true loaded_interaction.liked ~printer:string_of_bool;
+      assert_equal 10.5 loaded_interaction.watchtime ~printer:string_of_float;
+      assert_equal 5 (Hashtbl.find loaded_user.genre_counts "action") ~printer:string_of_int
 
 let test_load_nonexistent_user _ =
   match Storage.load_user "NonExistentUser" with
@@ -41,9 +41,9 @@ let test_save_user_with_special_chars _ =
   | None -> assert_failure "Failed to load special user"
   | Some loaded_user ->
       let loaded_interaction = List.hd loaded_user.vid_history in
-      assert_equal "Title with \"quotes\" and ,commas," loaded_interaction.video.title;
-      assert_equal "weird, genre" loaded_interaction.video.genre;
-      assert_equal 1 (Hashtbl.find loaded_user.genre_counts "weird, genre")
+      assert_equal "Title with \"quotes\" and ,commas," loaded_interaction.video.title ~printer:(fun x -> x);
+      assert_equal "weird, genre" loaded_interaction.video.genre ~printer:(fun x -> x);
+      assert_equal 1 (Hashtbl.find loaded_user.genre_counts "weird, genre") ~printer:string_of_int
 
 let tests =
   "storage tests"

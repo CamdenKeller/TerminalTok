@@ -12,14 +12,6 @@ bug-reports: "https://github.com/username/reponame/issues"
 depends: [
   "dune" {>= "3.20"}
   "ocaml"
-  "cryptokit"
-  "zarith"
-  "batteries"
-  "yojson"
-  "lwt"
-  "csv"
-  "bisect_ppx"
-  "ppx_inline_test"
   "odoc" {with-doc}
 ]
 build: [

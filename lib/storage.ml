@@ -65,3 +65,11 @@ let load_user (name : string) : user option =
     );
 
     Some { name; vid_history; genre_counts }
+
+let load_video_list (folder : string) : string list =
+  Sys.readdir folder |> Array.to_list
+  |> List.filter (fun f ->
+         Filename.check_suffix f ".mp4"
+         || Filename.check_suffix f ".mov"
+         || Filename.check_suffix f ".mkv")
+  |> List.map (Filename.concat folder)

@@ -115,12 +115,14 @@ let run () : unit Lwt.t =
 
     let%lwt () = Lwt_io.write_line msg_server_out name in
     let%lwt () = Lwt_io.flush msg_server_out in
-    let videos = Storage.load_video_list "videos" in
+    let video_data = Json_parser.parse_videos "data/videos.json" in
+    let videos = List.map (fun (_, _, f) -> f) video_data in
     let ascii_lst = Json_parser.parse_camels "data/ascii.json" in
     let rec session_loop () =
       (* allows program to catch Cntrl C exit *)
       Sys.catch_break true;
       try%lwt
+        let%lwt () = Lwt_io.printl "Generating recommendation..." in
         let video =
           Recommender.HybridRecommender.recommend_hybrid user ascii_lst
         in
@@ -143,6 +145,7 @@ let run () : unit Lwt.t =
                 else
                   let video_file = List.nth videos !video_index in
                   incr video_index;
+                  let%lwt () = Lwt_io.printl "Loading video from Drive..." in
                   play_ascii_video video_file)
               (* handles displaying ascii *)
                 else Lwt_io.printl v.ascii

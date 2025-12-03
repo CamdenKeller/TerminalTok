@@ -14,7 +14,7 @@ let pos6 = [ "_|"; "    _\\|"; "      O" ]
 let pos7 = [ "\\__\\"; "   /  /O" ]
 let pos8 = [ "  _O"; "    _/|"; "     |" ]
 let slide = [ " O_"; "    _\\ " ]
-let fps = 0.05
+let fps = ref 0.05
 
 (* 0.05 *)
 (* make ref, increases over time (based on score, maybe just floor of score
@@ -100,6 +100,7 @@ let output line pos =
   let no_high = search 9 2 = None in
   (* no high obstacles *)
   String.make 20 '\n' ^ "Score: " ^ string_of_int !score
+  ^ "\t\t\t High Score: 0"
   ^
   if no_high || line >= 2 then
     String.make (10 - line + third_line) '\n'
@@ -167,7 +168,7 @@ let wait_for_quiet () =
       Lwt.return_unit
     else
       (* discard the repeat and keep waiting *)
-      Lwt_io.read_char Lwt_io.stdin >>= fun _ -> Lwt_unix.sleep fps >>= loop
+      Lwt_io.read_char Lwt_io.stdin >>= fun _ -> Lwt_unix.sleep !fps >>= loop
   in
   loop ()
 
@@ -201,6 +202,7 @@ let rec print_loop () =
       (* also add 67s on above line(s)*)
       (* use array to store 67 loc vals bc there's a max amount there can be anyway *)
       (* (!obs = 0 || obstacles.(!obs) = init_distance-10) *)
+      if !fps > 0.03 && !score mod 100 = 0 then fps := !fps -. 0.001 else ();
       if obstacles.(0).loc = 0 then (
         obs := !obs - 1;
         for i = 0 to !obs do
@@ -239,7 +241,7 @@ let rec print_loop () =
       else input_data.until_input <- 7;
       (* 6 for jump*)
       Lwt_io.printl msg >>= fun () ->
-      Lwt_unix.sleep fps >>= fun () ->
+      Lwt_unix.sleep !fps >>= fun () ->
       let hit_high =
         match input_data.move with
         | STAND -> true
@@ -272,7 +274,7 @@ let cooldown = ref Lwt.return_unit (* resolves when input is allowed *)
 let rec input_loop () =
   let do_jump () =
     input_flag := true;
-    cooldown := Lwt_unix.sleep (7.0 *. fps);
+    cooldown := Lwt_unix.sleep (7.0 *. !fps);
     input_loop ()
   in
   (* Wait for cooldown to finish *)

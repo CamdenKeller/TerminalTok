@@ -94,9 +94,19 @@ let run_messaging_server sockadr () =
 
     (* update the client to have msg channel *)
     let%lwt name = Lwt_io.read_line client_in in
-    let this_client =
-      List.find (fun client -> client.name = name) !all_clients
+    
+    let rec find_client_with_retry name retries =
+      try
+        let client = List.find (fun c -> c.name = name) !all_clients in
+        Lwt.return client
+      with Not_found ->
+        if retries <= 0 then Lwt.fail Not_found
+        else
+          let%lwt () = Lwt_unix.sleep 0.1 in
+          find_client_with_retry name (retries - 1)
     in
+    
+    let%lwt this_client = find_client_with_retry name 20 in
     this_client.msg_addr <- Some (string_of_addr client_addr);
     this_client.msg_in <- Some client_in;
     this_client.msg_out <- Some client_out;

@@ -175,12 +175,12 @@ let wait_for_quiet () =
 let in_press = ref false
 
 (* Terminal mode setup/restore *)
-let original_termios = Unix.tcgetattr Unix.stdin
+let original_termios = lazy (Unix.tcgetattr Unix.stdin)
 
 let enable_raw_mode () =
   let raw =
     {
-      original_termios with
+      (Lazy.force original_termios) with
       Unix.c_icanon = false;
       (* disable canonical mode: no line buffering *)
       c_echo = false;
@@ -190,7 +190,7 @@ let enable_raw_mode () =
   Unix.tcsetattr Unix.stdin Unix.TCSANOW raw
 
 let restore_terminal () =
-  Unix.tcsetattr Unix.stdin Unix.TCSANOW original_termios
+  Unix.tcsetattr Unix.stdin Unix.TCSANOW (Lazy.force original_termios)
 
 let rec print_loop () =
   Lwt.catch
@@ -329,3 +329,17 @@ let run_dino () : unit Lwt.t =
     (fun () ->
       restore_terminal ();
       Lwt.return_unit)
+
+let%test_module "dinotok_tests" = (module struct
+  let%test "line calculation" =
+    line 7 = 2 && line 1 = 2 &&
+    line 6 = 4 && line 2 = 4 &&
+    line 5 = 5 && line 3 = 5 &&
+    line 4 = 6 &&
+    line 0 = 0 && line 8 = 0
+
+  let%test "join lines" =
+    let lines = ["line1"; "line2"; "line3"] in
+    let expected = "line1\nline2\nline3" in
+    join_lines lines = expected
+end)

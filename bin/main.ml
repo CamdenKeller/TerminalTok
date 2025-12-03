@@ -140,7 +140,8 @@ let run () : unit Lwt.t =
               let%lwt () = Lwt_io.printl "No videos; program ended" in
               Lwt.return_unit
           | Some v ->
-              let watch = { video = v; liked = false } in
+              let watch = { video = v; liked = false; watchtime = 0.0 } in
+              let start_time = Unix.gettimeofday () in
 
               (* Play either video or ASCII art *)
               let%lwt () =
@@ -167,6 +168,7 @@ let run () : unit Lwt.t =
                     let%lwt () = Lwt_io.close cnt_server_in in
                     let%lwt () = Lwt_io.close msg_server_out in
                     let%lwt () = Lwt_io.close msg_server_in in
+                    watch.watchtime <- Unix.gettimeofday () -. start_time;
                     add_to_history watch user;
                     Lwt.return_unit
                 | "L" ->
@@ -227,6 +229,7 @@ let run () : unit Lwt.t =
                     let%lwt () = handle_message () in
                     session_loop ()
                 | _ ->
+                    watch.watchtime <- Unix.gettimeofday () -. start_time;
                     add_to_history watch user;
                     session_loop ()
               in

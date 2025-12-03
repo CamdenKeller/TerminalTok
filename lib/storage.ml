@@ -17,7 +17,7 @@ let save_user (u : user) =
   (* Save history *)
   let history_file = Filename.concat user_dir "history.csv" in
   let history_data = List.map (fun (i : interaction) ->
-    [i.video.title; i.video.genre; string_of_bool i.liked]
+    [i.video.title; i.video.genre; string_of_bool i.liked; string_of_float i.watchtime]
   ) u.vid_history in
   Csv.save history_file history_data;
 
@@ -40,13 +40,15 @@ let load_user (name : string) : user option =
         let rows = Csv.load history_file in
         List.map (fun row ->
           match row with
-          | [title; genre; liked_str] ->
+          | [title; genre; liked_str; watchtime_str] ->
               let video = { title; genre; ascii = "" } in (* Dummy ascii *)
-              { video; liked = bool_of_string liked_str }
+              { video; liked = bool_of_string liked_str; watchtime = float_of_string watchtime_str }
+          | [title; genre; liked_str] -> 
+              let video = { title; genre; ascii = "" } in
+              { video; liked = bool_of_string liked_str; watchtime = 0.0 }
           | _ -> 
-              (* Handle potential malformed rows gracefully or skip *)
               let video = { title = "Unknown"; genre = "Unknown"; ascii = "" } in
-              { video; liked = false }
+              { video; liked = false; watchtime = 0.0 }
         ) rows
       else []
     in

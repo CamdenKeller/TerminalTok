@@ -18,6 +18,8 @@ depends: [
   "yojson"
   "lwt"
   "csv"
+  "bisect_ppx"
+  "ppx_inline_test"
   "odoc" {with-doc}
 ]
 build: [

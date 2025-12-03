@@ -1,5 +1,20 @@
 (test
- (name test_terminal_tok)
- (libraries ounit2 terminal_tok zarith)
-  (deps (glob_files_rec ../data/*))
+ (name test_storage)
+ (libraries ounit2 terminal_tok zarith csv)
+ (deps (glob_files_rec ../data/*))
+)
+
+(test
+ (name test_recommender)
+ (libraries ounit2 terminal_tok zarith csv)
+)
+
+(test
+ (name test_utils)
+ (libraries ounit2 terminal_tok zarith csv)
+)
+
+(test
+ (name test_json_parser)
+ (libraries ounit2 terminal_tok zarith csv)
 )

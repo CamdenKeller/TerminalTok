@@ -12,6 +12,12 @@ bug-reports: "https://github.com/username/reponame/issues"
 depends: [
   "dune" {>= "3.20"}
   "ocaml"
+  "cryptokit"
+  "zarith"
+  "batteries"
+  "yojson"
+  "lwt"
+  "csv"
   "odoc" {with-doc}
 ]
 build: [

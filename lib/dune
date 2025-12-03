@@ -1,4 +1,4 @@
 (library
  (name terminal_tok)
- (libraries yojson lwt.unix zarith cryptokit batteries)
+ (libraries yojson lwt.unix zarith cryptokit batteries csv)
  (preprocess (pps lwt_ppx)))

@@ -11,7 +11,8 @@ let add_to_history (inter : interaction) (user : user) =
 
   let g = inter.video.genre in
   let old = try Hashtbl.find user.genre_counts g with Not_found -> 0 in
-  Hashtbl.replace user.genre_counts g (old + 1)
+  Hashtbl.replace user.genre_counts g (old + 1);
+  Storage.save_user user
 
 (* Play a video using mpv in ASCII mode *)
 let play_ascii_video (file : string) : unit Lwt.t =
@@ -97,7 +98,13 @@ let run () : unit Lwt.t =
         else Lwt.return name
       in
       let%lwt name = name_loop () in
-      let user = { name; vid_history = []; genre_counts = Hashtbl.create 10 } in
+      let user =
+        match Storage.load_user name with
+        | Some u ->
+            print_endline ("Welcome back, " ^ name ^ "!");
+            u
+        | None -> { name; vid_history = []; genre_counts = Hashtbl.create 10 }
+      in
       let private_key = Encrypt.generate_private_key () in
 
       let pub_key = Encrypt.get_public_key private_key in

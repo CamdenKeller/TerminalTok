@@ -4,15 +4,16 @@ let () = Random.self_init ()
 let init_distance = 50
 
 (* positions for character: pos1 is the default, pos2-pos8 are for flips*)
-let pos1 = " O\n" ^ "   /|\\\n" ^ "   / \\"
-let pos2 = "O_\n" ^ "   |\\_\n" ^ "     \\"
-let pos3 = "O/__/\n" ^ "    \\  \\" (* maybe just 1 underscore? *)
-let pos4 = " |_ \n" ^ "   |/_\n" ^ "   O"
-let pos5 = "\\ / \n" ^ "   \\|/ \n" ^ "    O  "
-let pos6 = "_|\n" ^ "    _\\|\n" ^ "      O"
-let pos7 = "\\__\\\n" ^ "   /  /O"
-let pos8 = "  _O\n" ^ "    _/|\n" ^ "     |"
-let slide = " O_\n" ^ "    _\\ "
+
+let pos1 = [ " O "; "   /|\\"; "   / \\" ]
+let pos2 = [ "O_"; "   |\\_"; "     \\" ]
+let pos3 = [ "O/__/"; "    \\  \\" ]
+let pos4 = [ " |_ "; "   |/_"; "   O" ]
+let pos5 = [ "\\ / "; "   \\|/ "; "    O  " ]
+let pos6 = [ "_|"; "    _\\|"; "      O" ]
+let pos7 = [ "\\__\\"; "   /  /O" ]
+let pos8 = [ "  _O"; "    _/|"; "     |" ]
+let slide = [ " O_"; "    _\\ " ]
 let fps = 0.05
 
 (* 0.05 *)
@@ -35,9 +36,16 @@ type input = {
 let input_data = { until_input = 0; move = STAND }
 
 (* let until_input = ref 0 *)
+(* make array with record containing info about obstacles so maybe in air *)
+(* this is test file so just go for it*)
+type obstacle = {
+  mutable loc : int;
+  height : int;
+}
+
 let score = ref 0
 let max_obs = 10
-let obstacles = Array.make max_obs (-1)
+let obstacles = Array.init max_obs (fun _ -> { loc = -1; height = 0 })
 let obs = ref 0 (* number of obstacles *)
 let last_67 = ref 0
 
@@ -54,25 +62,64 @@ let line = function
    based on that and also loc of person, num 67s, etc. *)
 let move_obs () =
   for i = 0 to min !obs max_obs - 1 do
-    obstacles.(i) <- obstacles.(i) - 1
+    obstacles.(i).loc <- obstacles.(i).loc - 1
   done
 
-let obs_string () =
+let rec search j h =
+  if j < 0 then None
+  else if obstacles.(j).height = h then Some j
+  else search (j - 1) h
+
+let obs_string h =
   let obs_line = ref "" in
   for i = 0 to !obs - 1 do
-    let spaces =
-      if i > 0 then obstacles.(i) - obstacles.(i - 1) else obstacles.(i)
-    in
-    obs_line := !obs_line ^ String.make (max 0 spaces) ' ' ^ "67"
+    if obstacles.(i).height = h then begin
+      (* find previous obstacle with height = 0 *)
+      let prev = search (i - 1) h in
+      let spaces =
+        match prev with
+        | None -> obstacles.(i).loc
+        | Some j -> obstacles.(i).loc - obstacles.(j).loc - 2
+        (* was one but case for first ob.loc = 0 was wrong bc didnt move just
+           shifted``````````````````````````````````````````````````````````````````````````````````*)
+      in
+      obs_line := !obs_line ^ String.make (max 0 spaces) ' ' ^ "67"
+    end
   done;
   !obs_line
 
+let join_lines lines = String.concat "\n" lines
+
+let stand_high lines =
+  match lines with
+  | [ l1; l2; l3 ] -> l1 ^ obs_string 2 ^ "\n" ^ l2 ^ "\n" ^ l3
+  | _ -> invalid_arg "join_lines expects exactly 3 strings"
+
 let output line pos =
   let third_line = if pos = pos3 || pos = pos7 || pos = slide then 1 else 0 in
+  let no_high = search 9 2 = None in
+  (* no high obstacles *)
   String.make 20 '\n' ^ "Score: " ^ string_of_int !score
-  ^ String.make (10 - line + third_line) '\n'
-  ^ "   " ^ pos ^ String.make line '\n'
-  ^ if line = 0 then "" else "      "
+  ^
+  if no_high || line >= 2 then
+    String.make (10 - line + third_line) '\n'
+    ^ "   " ^ join_lines pos
+    ^ (if no_high then String.make line '\n'
+       else
+         String.make (line - 2) '\n'
+         ^ (if line = 2 then ""
+            else "      " (* compact so no_high condition is here or smth *))
+         ^ obs_string 2 ^ String.make 2 '\n')
+    ^ if line = 0 then "" else "      "
+  else (* line=0 bc its never 1; ppos is either pos1 (stand) or slide *)
+    (* String.make (10 - line + third_line) '\n' *)
+    String.make 10 '\n'
+    ^
+    if pos = slide then "      " ^ obs_string 2 ^ "\n" ^ "   " ^ join_lines pos
+    else "   " ^ stand_high pos
+(* 1st string of pos then string of rest *)
+(* basically add n to output func, if n≥2 then just add obstacles at h=2, else
+   do string by string from pos *)
 
 let jump n =
   let line = line n in
@@ -154,19 +201,25 @@ let rec print_loop () =
       (* also add 67s on above line(s)*)
       (* use array to store 67 loc vals bc there's a max amount there can be anyway *)
       (* (!obs = 0 || obstacles.(!obs) = init_distance-10) *)
-      if obstacles.(0) = 0 then (
+      if obstacles.(0).loc = 0 then (
         obs := !obs - 1;
         for i = 0 to !obs do
-          obstacles.(i) <- obstacles.(i + 1)
+          obstacles.(i) <-
+            { (obstacles.(i + 1)) with loc = obstacles.(i + 1).loc - 1 }
         done)
       else (* fix bc out of bounds *)
         move_obs ();
       let new_67 =
         !obs = 0
-        || (obstacles.(!obs - 1) < init_distance - 13 && Random.int 10 = 1)
+        || (obstacles.(!obs - 1).loc < init_distance - 13 && Random.int 10 = 1)
       in
       if new_67 then (
-        obstacles.(!obs) <- init_distance - 1;
+        let level =
+          match Random.int 3 with
+          | 2 -> 2
+          | _ -> 0
+        in
+        obstacles.(!obs) <- { loc = init_distance - 1; height = level };
         (* information for new obstacle *)
         obs := !obs + 1)
       else ();
@@ -178,7 +231,7 @@ let rec print_loop () =
         | FRONTFLIP -> frontflip input_data.until_input
         | BACKFLIP -> backflip input_data.until_input
         | SLIDE -> slide ())
-        ^ obs_string ()
+        ^ obs_string 0
       in
       if (not had_input) && input_data.until_input = 0 then ()
       else if not had_input then
@@ -187,7 +240,19 @@ let rec print_loop () =
       (* 6 for jump*)
       Lwt_io.printl msg >>= fun () ->
       Lwt_unix.sleep fps >>= fun () ->
-      if obstacles.(0) = 0 && input_data.until_input = 0 then
+      let hit_high =
+        match input_data.move with
+        | STAND -> true
+        | JUMP | FRONTFLIP | BACKFLIP ->
+            line input_data.until_input = 2 || line input_data.until_input = 0
+        | SLIDE -> false
+      in
+      if
+        obstacles.(0).loc = 0
+        && ((obstacles.(0).height = 0 && input_data.until_input = 0)
+           || (obstacles.(0).height = 2 && hit_high))
+      then
+        (* edit so based on object height and character height *)
         raise (Clarkson "Clarkson is coming for you");
       print_loop ())
     (function

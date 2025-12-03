@@ -10,7 +10,7 @@ Ruben Lemmon, rcl229
 opam install . --deps-only
 
 **In a separate terminal, run:**  
-dune exec bin/server.exe
+dune exec bin/server.exe  
 
 **For each client, run in their own terminal:**  
 dune exec bin/main.exe
@@ -22,7 +22,7 @@ dune exec bin/main.exe
 mpv --vo=tct <your_video_file>.mp4
 
 **1. Install Homebrew (macOS only)**  
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"    
 **2. Install mpv**  
    brew install mpv
 

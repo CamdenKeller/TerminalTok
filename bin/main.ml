@@ -123,7 +123,7 @@ let run () : unit Lwt.t =
         (* allows program to catch Cntrl C exit *)
         Sys.catch_break true;
         try%lwt
-          let video = Recommender.recommend user ascii_lst in
+          let video = Recommender.HybridRecommender.recommend_hybrid user ascii_lst in
 
           match video with
           | None ->

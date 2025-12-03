@@ -17,7 +17,7 @@ let test_recommend_basic _ =
     { name = "greg"; vid_history = []; genre_counts = user_gc }
   in
 
-  let result = recommend basic_user videos in
+  let result = HybridRecommender.recommend_hybrid basic_user videos in
 
   match result with
   | None -> assert_failure "Expected Some(video), but got None"
@@ -34,7 +34,7 @@ let test_recommend_new_user _ =
     { name = "newbie"; vid_history = []; genre_counts = Hashtbl.create 5 }
   in
 
-  let result = recommend new_user videos in
+  let result = HybridRecommender.recommend_hybrid new_user videos in
 
   let is_valid_recommendation =
     match result with

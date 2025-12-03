@@ -7,7 +7,6 @@ type video = {
 type interaction = {
   video : video;
   mutable watchtime : float;
-  (* Add both watchtime and time before liking? *)
   mutable liked : bool;
 }
 

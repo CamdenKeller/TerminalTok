@@ -1,4 +1,7 @@
 opam install . --deps-only
-dune exec terminal-tok
 
-<!-- opam install cryptokit zarith yojson lwt batteries ounit2 csv bisect_ppx ppx_inline_test -->
+In a separate terminal, run:
+dune exec bin/server.exe
+
+For each client, run in their own terminal:
+dune exec bin/main.exe

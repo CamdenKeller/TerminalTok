@@ -35,7 +35,7 @@ let run_counting_server sockadr () =
     let client =
       {
         name;
-        pub_key = None;
+        pub_key = Some cl_pub_key;
         cnt_addr = address_string;
         cnt_in = client_in;
         cnt_out = client_out;
@@ -88,9 +88,9 @@ let run_messaging_server sockadr () =
     Lwt_io.printf "Starting messaging server on %s\n" (string_of_addr sockadr)
   in
   let srv_priv_key = Encrypt.(generate_private_key ()) in
-  let pub_key = Z.to_string Encrypt.(get_public_key srv_priv_key) in
+  let srv_pub_key = Z.to_string Encrypt.(get_public_key srv_priv_key) in
   let client_handler client_addr (client_in, client_out) : unit Lwt.t =
-    let%lwt () = Lwt_io.write_line client_out pub_key in
+    let%lwt () = Lwt_io.write_line client_out srv_pub_key in
     let%lwt () = Lwt_io.flush client_out in
 
     (* update the client to have msg channel *)
@@ -111,7 +111,6 @@ let run_messaging_server sockadr () =
     this_client.msg_addr <- Some (string_of_addr client_addr);
     this_client.msg_in <- Some client_in;
     this_client.msg_out <- Some client_out;
-    this_client.pub_key <- Some pub_key;
     let%lwt () =
       Lwt_list.iter_p
         (fun client ->
@@ -138,6 +137,7 @@ let run_messaging_server sockadr () =
           let key = Encrypt.secret_to_key shared_secret in
 
           let client_message = Encrypt.decrypt_msg client_message key in
+
           let%lwt () =
             Lwt_list.iter_p
               (fun client ->

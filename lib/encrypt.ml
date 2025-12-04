@@ -57,5 +57,3 @@ let encrypt_msg (msg : string) (key : string) : string =
     msg
 
 let decrypt_msg (msg : string) (key : string) : string = encrypt_msg msg key
-(* let transform = Cryptokit.Cipher.aes key Cipher.Decrypt in transform_string
-   transform msg *)

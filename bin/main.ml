@@ -15,7 +15,7 @@ let add_to_history (inter : interaction) (user : user) =
 
 (* Play a video using mpv in ASCII mode *)
 let play_ascii_video (file : string) : unit Lwt.t =
-  let command = ("mpv", [| "mpv"; "--vo=tct"; file |]) in
+  let command = ("mpv", [| "mpv"; "--vo=tct"; "--input-conf=data/mpv_input.conf"; file |]) in
   let process = Lwt_process.open_process_none command in
   process#status >|= fun _ -> ()
 
@@ -33,6 +33,9 @@ let run () : unit Lwt.t =
       \  - Enter 'Q' to quit the session\n\
       \  - Enter 'C' to enter an encrypted chat with other users\n\
       \  - Enter anything else to go to the next Tok\n\n\
+      \  Video Controls:\n\
+      \  - 'p' or SPACE to pause/resume\n\
+      \  - 's' or 'q' to skip video\n\n\
        (press ENTER to begin session)"
   in
   let%lwt () = Lwt_io.printl "Select mode: (1) Online (2) Offline" in
@@ -145,7 +148,7 @@ let run () : unit Lwt.t =
                 else
                   let video_file = List.nth videos !video_index in
                   incr video_index;
-                  let%lwt () = Lwt_io.printl "Loading video from Drive..." in
+                  let%lwt () = Lwt_io.printl "Loading video..." in
                   play_ascii_video video_file)
               (* handles displaying ascii *)
                 else Lwt_io.printl v.ascii

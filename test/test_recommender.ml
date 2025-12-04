@@ -2,6 +2,8 @@ open OUnit2
 open Terminal_tok.Recommender
 open Terminal_tok.Types
 
+let () = Random.init 0
+
 (* ===== Helper Functions ===== *)
 
 let make_video title genre =
@@ -141,8 +143,9 @@ let test_genre_preference _ =
   let inter1 = make_interaction v1 false 2.0 in
   let inter2 = make_interaction v2 true 15.0 in
   let inter3 = make_interaction v3 false 1.0 in
+  let inter4 = make_interaction v2 true 12.0 in
   
-  let user = make_user_with_history "diverse_user" [inter1; inter2; inter3] in
+  let user = make_user_with_history "diverse_user" [inter1; inter2; inter3; inter4] in
   let videos = [v4; v5; v6] in
   
   let result = HybridRecommender.recommend_hybrid user videos in

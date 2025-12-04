@@ -28,3 +28,5 @@ type client = {
   mutable msg_in : Lwt_io.input_channel option;
   mutable msg_out : Lwt_io.output_channel option;
 }
+
+exception Server_not_started

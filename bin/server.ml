@@ -18,16 +18,6 @@ let format_clients (clients : client list) =
   List.iter (fun x -> string := !string ^ " " ^ x.name) (List.rev clients);
   !string
 
-(* Writes list of clients to all clients*)
-let write_all_clients_to_all =
-  Lwt_list.iter_p
-    (fun client ->
-      let%lwt () =
-        Lwt_io.write_line client.cnt_out (format_clients !all_clients)
-      in
-      Lwt_io.flush client.cnt_out)
-    !all_clients
-
 let run_counting_server sockadr () =
   (* Define server keys*)
   let client_handler client_addr (client_in, client_out) : unit Lwt.t =
@@ -73,7 +63,13 @@ let run_counting_server sockadr () =
       (* Handle clients leaving *)
       let new_clients = List.filter (fun x -> x.name <> name) !all_clients in
       all_clients := new_clients;
-      write_all_clients_to_all
+      Lwt_list.iter_p
+        (fun client ->
+          let%lwt () =
+            Lwt_io.write_line client.cnt_out (format_clients !all_clients)
+          in
+          Lwt_io.flush client.cnt_out)
+        !all_clients
   in
   let server () =
     let%lwt running_server =
@@ -93,7 +89,7 @@ let run_messaging_server sockadr () =
 
     (* update the client to have msg channel *)
     let%lwt name = Lwt_io.read_line client_in in
-    
+
     let rec find_client_with_retry name retries =
       try
         let client = List.find (fun c -> c.name = name) !all_clients in
@@ -104,7 +100,7 @@ let run_messaging_server sockadr () =
           let%lwt () = Lwt_unix.sleep 0.1 in
           find_client_with_retry name (retries - 1)
     in
-    
+
     let%lwt this_client = find_client_with_retry name 20 in
     this_client.msg_addr <- Some (string_of_addr client_addr);
     this_client.msg_in <- Some client_in;
@@ -125,7 +121,6 @@ let run_messaging_server sockadr () =
 
     let rec receive_message () =
       let%lwt client_message = Lwt_io.read_line client_in in
-      let%lwt () = Lwt_io.printl ("Encrypted msg: " ^ client_message) in
 
       match this_client.pub_key with
       | None -> failwith "Error with client key"
@@ -138,20 +133,18 @@ let run_messaging_server sockadr () =
 
           let client_message = Encrypt.decrypt_msg client_message key in
           let%lwt () =
-            Lwt_io.printlf "Message received from client '%s': %s" name
-              client_message
-          in
-          let%lwt () =
             Lwt_list.iter_p
               (fun client ->
-                match (client.msg_in, client.msg_out) with
-                | Some msg_in, Some msg_out ->
-                    let%lwt () =
-                      Lwt_io.write_line msg_out
-                        (name ^ " says " ^ client_message)
-                    in
-                    Lwt_io.flush msg_out
-                | _ -> Lwt.return_unit)
+                if this_client.name = client.name then Lwt.return_unit
+                else
+                  match (client.msg_in, client.msg_out) with
+                  | Some msg_in, Some msg_out ->
+                      let%lwt () =
+                        Lwt_io.write_line msg_out
+                          (name ^ " says " ^ client_message)
+                      in
+                      Lwt_io.flush msg_out
+                  | _ -> Lwt.return_unit)
               !all_clients
           in
           receive_message ()
@@ -159,21 +152,10 @@ let run_messaging_server sockadr () =
     try%lwt receive_message () with
     | End_of_file ->
         (* Handle clients leaving *)
-        (* let%lwt () = format_client_names !all_clients in *)
-        let%lwt () = Lwt_io.print "\n" in
-        let%lwt () = Lwt_io.printl (string_of_addr client_addr) in
-
         let%lwt removed_client =
           (* filter out this client from the all_clients list if it catches a
              break *)
           Lwt.return (List.filter (fun x -> x.name = name) !all_clients)
-        in
-        let%lwt () =
-          Lwt_list.iter_p (fun x -> Lwt_io.print (x.name ^ " ")) removed_client
-        in
-        let%lwt () =
-          Lwt_io.printf
-            "(%s) has left the chat. Reason of departure: End of file\n" name
         in
 
         let new_clients = List.filter (fun x -> x.name <> name) !all_clients in
@@ -189,7 +171,6 @@ let run_messaging_server sockadr () =
           (string_of_addr client_addr)
   in
   let server () =
-
     let%lwt running_server =
       Lwt_io.establish_server_with_client_address sockadr client_handler
     in

@@ -30,3 +30,6 @@ type client = {
   mutable msg_in : Lwt_io.input_channel option; (** Input channel for messaging server *)
   mutable msg_out : Lwt_io.output_channel option; (** Output channel for messaging server *)
 }
+
+(** [Server_not_started] is raised when a client tries to connect to a server that hasn't started. *)
+exception Server_not_started

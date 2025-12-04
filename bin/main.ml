@@ -19,7 +19,9 @@ let add_to_history (inter : interaction) (user : user) =
 
 (* Play a video using mpv in ASCII mode *)
 let play_ascii_video (file : string) : unit Lwt.t =
-  let command = ("mpv", [| "mpv"; "--vo=tct"; "--input-conf=data/mpv_input.conf"; file |]) in
+  let command =
+    ("mpv", [| "mpv"; "--vo=tct"; "--input-conf=data/mpv_input.conf"; file |])
+  in
   let process = Lwt_process.open_process_none command in
   process#status >|= fun _ -> ()
 
@@ -126,7 +128,6 @@ let run () : unit Lwt.t =
     let%lwt () = Lwt_io.printl "Press ENTER to continue" in
     let%lwt _ = Lwt_io.read_line Lwt_io.stdin in
     let private_key = Encrypt.generate_private_key () in
-
     let pub_key = Encrypt.get_public_key private_key in
 
     (* here we must have the server write its shared public key so we can find
@@ -159,7 +160,7 @@ let run () : unit Lwt.t =
           if video_mode then
             if !video_index < List.length video_data then
               let name, genre, file = List.nth video_data !video_index in
-              Some { title = name; genre = genre; ascii = file }
+              Some { title = name; genre; ascii = file }
             else None
           else Recommender.HybridRecommender.recommend_hybrid user ascii_lst
         in
@@ -180,7 +181,7 @@ let run () : unit Lwt.t =
                 let%lwt () = Lwt_io.printl "Loading video..." in
                 play_ascii_video v.ascii)
               (* handles displaying ascii *)
-              else Lwt_io.printl v.ascii
+                else Lwt_io.printl v.ascii
             in
 
             (* Handle user input for this "Tok" *)
@@ -295,4 +296,4 @@ let _ =
         "\n\
          You must first run 'dune exec bin/server.exe' in a separate terminal \
          to start the server."
-  | _ -> print_endline "Failed for unknown reason"
+  | _ -> print_endline "Please make sure that the server is running."

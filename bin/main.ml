@@ -123,6 +123,8 @@ let run () : unit Lwt.t =
           u
       | None -> { name; vid_history = []; genre_counts = Hashtbl.create 10 }
     in
+    let%lwt () = Lwt_io.printl "Press ENTER to continue" in
+    let%lwt _ = Lwt_io.read_line Lwt_io.stdin in
     let private_key = Encrypt.generate_private_key () in
 
     let pub_key = Encrypt.get_public_key private_key in

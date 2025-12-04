@@ -16,7 +16,6 @@ module MLRecommender = struct
   
   (* Initialize embeddings with small random values *)
   let init_embeddings () : embeddings =
-    Random.self_init ();
     {
       user_embeddings = Hashtbl.create 50;
       video_embeddings = Hashtbl.create 100;
@@ -143,7 +142,6 @@ module MLRecommender = struct
 end
 
 module HybridRecommender = struct
-  let embeddings = MLRecommender.init_embeddings ()
   
   (* Start the model with just recommending based on Genre Based signals*)
   let content_based_score (user : user) (video : video) : float =
@@ -153,7 +151,7 @@ module HybridRecommender = struct
     with Not_found -> 0.0
 
   (* Collaborative filtering via ML *)
-  let collaborative_score (user : user) (video : video) : float =
+  let collaborative_score (embeddings : MLRecommender.embeddings) (user : user) (video : video) : float =
     if List.length user.vid_history < 2 then 0.0
     else MLRecommender.predict_score embeddings user.name video.title
 
@@ -161,12 +159,16 @@ module HybridRecommender = struct
     List.exists (fun inter -> inter.video.title = v.title) user.vid_history
 
   let recommend_hybrid (user : user) (videos : video list) : video option =
+    let embeddings = MLRecommender.init_embeddings () in
     (* Filter out already-watched videos *)
     let unwatched =
       List.filter (fun v -> not (has_watched user v)) videos
     in
 
-    if unwatched = [] then None
+    if unwatched = [] then 
+      (* If all videos watched, pick a random one to rewatch *)
+      if videos = [] then None
+      else Some (List.nth videos (Random.int (List.length videos)))
     else if List.length user.vid_history = 0 then
       Some (List.nth unwatched (Random.int (List.length unwatched)))
     else if List.length user.vid_history < 3 then
@@ -183,7 +185,7 @@ module HybridRecommender = struct
         
       let scored = List.map (fun v ->
         let content_score = content_based_score user v in
-        let collab_score = collaborative_score user v in
+        let collab_score = collaborative_score embeddings user v in
         let hybrid_score = (0.3 *. content_score) +. (0.7 *. collab_score) in
         (v, hybrid_score)
       ) unwatched in       

@@ -68,11 +68,31 @@ let test_parse_videos _ =
   assert_equal "Genre 1" g1;
   assert_equal "path/to/video1.mp4" f1
 
+let test_parse_malformed_json _ =
+  let json_content = "{ invalid_json: " in
+  let filename = "malformed.json" in
+  let oc = open_out filename in
+  output_string oc json_content;
+  close_out oc;
+
+  assert_raises (Yojson.Json_error "Line 1, bytes 15-16:\nUnexpected end of input") (fun () -> parse_camels filename);
+  Sys.remove filename
+
+let test_parse_empty_file _ =
+  let filename = "empty.json" in
+  let oc = open_out filename in
+  close_out oc;
+
+  assert_raises (Yojson.Json_error "Blank input data") (fun () -> parse_camels filename);
+  Sys.remove filename
+
 let tests =
   "json parser tests"
   >::: [
          "parse valid json" >:: test_parse_valid_json;
          "parse videos json" >:: test_parse_videos;
+         "parse malformed json" >:: test_parse_malformed_json;
+         "parse empty file" >:: test_parse_empty_file;
        ]
 
 let _ = run_test_tt_main tests

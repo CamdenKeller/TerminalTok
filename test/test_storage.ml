@@ -45,12 +45,40 @@ let test_save_user_with_special_chars _ =
       assert_equal "weird, genre" loaded_interaction.video.genre ~printer:(fun x -> x);
       assert_equal 1 (Hashtbl.find loaded_user.genre_counts "weird, genre") ~printer:string_of_int
 
+let test_save_user_empty_history _ =
+  let user = { name = "EmptyUser"; vid_history = []; genre_counts = Hashtbl.create 5 } in
+  Storage.save_user user;
+  match Storage.load_user "EmptyUser" with
+  | None -> assert_failure "Failed to load user with empty history"
+  | Some loaded_user ->
+      assert_equal "EmptyUser" loaded_user.name ~printer:(fun x -> x);
+      assert_equal 0 (List.length loaded_user.vid_history) ~printer:string_of_int
+
+let test_overwrite_user _ =
+  let user_gc = Hashtbl.create 5 in
+  let user = { name = "OverwriteUser"; vid_history = []; genre_counts = user_gc } in
+  Storage.save_user user;
+  
+  let v1 = { title = "NewVideo"; ascii = ""; genre = "new" } in
+  let interaction = { video = v1; watchtime = 10.0; liked = true } in
+  let updated_user = { user with vid_history = [interaction] } in
+  Storage.save_user updated_user;
+
+  match Storage.load_user "OverwriteUser" with
+  | None -> assert_failure "Failed to load overwritten user"
+  | Some loaded_user ->
+      assert_equal 1 (List.length loaded_user.vid_history) ~printer:string_of_int;
+      let loaded_interaction = List.hd loaded_user.vid_history in
+      assert_equal "NewVideo" loaded_interaction.video.title ~printer:(fun x -> x)
+
 let tests =
   "storage tests"
   >::: [
          "save and load user" >:: test_save_and_load_user;
          "load nonexistent user" >:: test_load_nonexistent_user;
          "save user with special chars" >:: test_save_user_with_special_chars;
+         "save user empty history" >:: test_save_user_empty_history;
+         "overwrite user" >:: test_overwrite_user;
        ]
 
 let _ = run_test_tt_main tests

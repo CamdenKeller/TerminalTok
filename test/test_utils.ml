@@ -29,10 +29,38 @@ let test_encryption_functions _ =
     assert_equal msg (decrypt_msg e_msg key))
 
 
+let test_format_names_empty _ =
+  assert_equal "" (Utils.format_names "")
+
+let test_format_names_single _ =
+  let client = "single[12345]" in
+  assert_equal "single " (Utils.format_names client)
+
+let test_key_uniqueness _ =
+  let k1 = Encrypt.generate_private_key () in
+  let k2 = Encrypt.generate_private_key () in
+  assert_bool "Keys should be different" (k1 <> k2)
+
+let test_shared_secret_commutativity _ =
+  let priv_a = Encrypt.generate_private_key () in
+  let pub_a = Encrypt.get_public_key priv_a in
+  let priv_b = Encrypt.generate_private_key () in
+  let pub_b = Encrypt.get_public_key priv_b in
+  
+  let ss_a = Encrypt.get_shared_secret pub_b priv_a in
+  let ss_b = Encrypt.get_shared_secret pub_a priv_b in
+  
+  assert_equal ss_a ss_b
+
 let tests =
   "utils tests"
   >::: [
          "encryption functions" >:: test_encryption_functions;
+         "main helpers" >:: test_main_helpers;
+         "format names empty" >:: test_format_names_empty;
+         "format names single" >:: test_format_names_single;
+         "key uniqueness" >:: test_key_uniqueness;
+         "shared secret commutativity" >:: test_shared_secret_commutativity;
        ]
 
 let _ = run_test_tt_main tests

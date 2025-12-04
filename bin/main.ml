@@ -19,7 +19,7 @@ let add_to_history (inter : interaction) (user : user) =
 
 (* Play a video using mpv in ASCII mode *)
 let play_ascii_video (file : string) : unit Lwt.t =
-  let command = ("mpv", [| "mpv"; "--vo=tct"; file |]) in
+  let command = ("mpv", [| "mpv"; "--vo=tct"; "--input-conf=data/mpv_input.conf"; file |]) in
   let process = Lwt_process.open_process_none command in
   process#status >|= fun _ -> ()
 
@@ -38,6 +38,9 @@ let run () : unit Lwt.t =
       \  - Enter 'Q' to quit the session\n\
       \  - Enter 'C' to enter an encrypted chat with other users\n\
       \  - Enter anything else to go to the next Tok\n\n\
+      \  Video Controls:\n\
+      \  - 'p' or SPACE to pause/resume\n\
+      \  - 's' or 'q' to skip video\n\n\
        (press ENTER to begin session)"
   in
   let%lwt () = Lwt_io.printl "Select mode: (1) Online (2) Offline" in
@@ -142,14 +145,21 @@ let run () : unit Lwt.t =
 
     let%lwt () = Lwt_io.write_line msg_server_out name in
     let%lwt () = Lwt_io.flush msg_server_out in
-    let videos = Storage.load_video_list "videos" in
+
+    let video_data = Json_parser.parse_videos "data/videos.json" in
+
     let ascii_lst = Json_parser.parse_camels "data/ascii.json" in
     let rec session_loop () =
       (* allows program to catch Cntrl C exit *)
       Sys.catch_break true;
       try%lwt
         let video =
-          Recommender.HybridRecommender.recommend_hybrid user ascii_lst
+          if video_mode then
+            if !video_index < List.length video_data then
+              let name, genre, file = List.nth video_data !video_index in
+              Some { title = name; genre = genre; ascii = file }
+            else None
+          else Recommender.HybridRecommender.recommend_hybrid user ascii_lst
         in
 
         match video with
@@ -164,15 +174,11 @@ let run () : unit Lwt.t =
             let%lwt () =
               (* handles playing videos *)
               if video_mode then (
-                if !video_index >= List.length videos then
-                  Lwt_io.printl "No more videos :(" >>= fun () ->
-                  Lwt.return_unit
-                else
-                  let video_file = List.nth videos !video_index in
-                  incr video_index;
-                  play_ascii_video video_file)
+                incr video_index;
+                let%lwt () = Lwt_io.printl "Loading video..." in
+                play_ascii_video v.ascii)
               (* handles displaying ascii *)
-                else Lwt_io.printl v.ascii
+              else Lwt_io.printl v.ascii
             in
 
             (* Handle user input for this "Tok" *)

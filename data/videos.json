@@ -1,44 +1,88 @@
 {
   "videos": [
     {
-      "name": "Drive Video 1",
+      "name": "Nature",
       "genre": "Unknown",
-      "file": "https://drive.google.com/file/d/1ecqAbGTfFJRDHeRL_9lLbchr3lF90tCJ/view?usp=sharing"
+      "file": "videos/311442_tiny.mp4",
+      "length": 50,
+      "description": "A peaceful outdoor scene showcasing natural scenery and quiet landscapes.",
+      "hashtags": [
+        "#nature",
+        "#relaxing",
+        "#outdoors",
+        "#scenery",
+        "#calm"
+      ]
     },
     {
-      "name": "Drive Video 2",
+      "name": "Band",
       "genre": "Unknown",
-      "file": "https://drive.google.com/file/d/1R6ULrTixlyOsUeE0lI5eeP86rYanyIoT/view?usp=sharing"
+      "file": "videos/13107446_3840_2160_24fps.mp4",
+      "length": 10,
+      "description": "A lively group of musicians performing together on stage or in rehearsal.",
+      "hashtags": [
+        "#music",
+        "#band",
+        "#performance",
+        "#musicians",
+        "#live"
+      ]
     },
     {
-      "name": "Drive Video 3",
+      "name": "Fishing",
       "genre": "Unknown",
-      "file": "https://drive.google.com/file/d/1ZPRz_NRom7pTrhmSMar7mjAfHgQVM0PJ/view?usp=sharings"
+      "file": "videos/14695650_3840_2160_30fps.mp4",
+      "length": 9,
+      "description": "A relaxing fishing scene featuring a person catching or preparing to cast a line.",
+      "hashtags": [
+        "#fishing",
+        "#outdoors",
+        "#water",
+        "#relaxing",
+        "#hobby"
+      ]
     },
     {
-      "name": "Video 4",
+      "name": "Butterfly",
       "genre": "Unknown",
-      "file": "videos/13107446_3840_2160_24fps.mp4"
+      "file": "videos/14706394_2160_3840_24fps.mp4",
+      "length": 26,
+      "description": "Close-up footage of a butterfly showing delicate wings and natural beauty.",
+      "hashtags": [
+        "#butterfly",
+        "#macro",
+        "#nature",
+        "#wildlife",
+        "#beauty"
+      ]
     },
     {
-      "name": "Video 5",
+      "name": "Breakfast",
       "genre": "Unknown",
-      "file": "videos/14695650_3840_2160_30fps.mp4"
-    },
-    {
-      "name": "Video 6",
-      "genre": "Unknown",
-      "file": "videos/14706394_2160_3840_24fps.mp4"
-    },
-    {
-      "name": "Video 7",
-      "genre": "Unknown",
-      "file": "videos/6866463-hd_1080_1920_30fps.mp4"
+      "file": "videos/6866463-hd_1080_1920_30fps.mp4",
+      "length": 15,
+      "description": "A cozy breakfast scene showing food preparation or an inviting meal setup.",
+      "hashtags": [
+        "#breakfast",
+        "#food",
+        "#morning",
+        "#aesthetic",
+        "#cooking"
+      ]
     },
     {
       "name": "Cows",
       "genre": "Unknown",
-      "file": "videos/COWS_AT_THE_GRASS.mp4"
+      "file": "videos/COWS_AT_THE_GRASS.mp4",
+      "length": 15,
+      "description": "Cows grazing peacefully in open grass fields under a calm outdoor setting.",
+      "hashtags": [
+        "#cows",
+        "#farm",
+        "#animals",
+        "#rural",
+        "#grasslands"
+      ]
     }
   ]
 }

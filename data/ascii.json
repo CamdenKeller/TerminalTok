@@ -3,143 +3,389 @@
     {
       "name": "camel1",
       "genre": "medium",
-      "ascii": "a'!   _,,_ a'!   _,,_     a'!   _,,_\n  \\_/    \\  \\_/    \\      \\_/    \\.-,\n   \\, /-( /'-,\\, /-( /'-,    \\, /-( /\n   //\\ //\\\\   //\\ //\\\\       //\\ //\\\\"
+      "ascii": "a'!   _,,_ a'!   _,,_     a'!   _,,_\n  \\_/    \\  \\_/    \\      \\_/    \\.-,\n   \\, /-( /'-,\\, /-( /'-,    \\, /-( /\n   //\\ //\\\\   //\\ //\\\\       //\\ //\\\\",
+      "description": "Three simple camel heads with expressive nostrils and curved necks.",
+      "hashtags": [
+        "#camel",
+        "#ascii",
+        "#art",
+        "#mediumCamel",
+        "#cute"
+      ],
+      "length": 0
     },
     {
       "name": "camel2",
       "genre": "big",
-      "ascii": "      ~)\n      .(_/^\\           ~)       ~)        ~)\n       ./|~|\\   ~)    .'(_/^^\\'..'(_/^\\'..'(_/^\\. ~)\n       /'/'/'|''(_/^\\'   /|~|\\    /|~|\\    /|~|\\''(_/^\\\n                 /|~|\\  / / / |  / / / |  / / / |  /|~|\\\n                / / / |                           / / / |"
+      "ascii": "      ~)\n      .(_/^\\           ~)       ~)        ~)\n       ./|~|\\   ~)    .'(_/^^\\'..'(_/^\\'..'(_/^\\. ~)\n       /'/'/'|''(_/^\\'   /|~|\\    /|~|\\    /|~|\\''(_/^\\\n                 /|~|\\  / / / |  / / / |  / / / |  /|~|\\\n                / / / |                           / / / |",
+      "description": "Multiple tall camels with long necks and repeated hump patterns in a desert caravan.",
+      "hashtags": [
+        "#camel",
+        "#bigCamel",
+        "#caravan",
+        "#ascii",
+        "#desert"
+      ],
+      "length": 0
     },
     {
       "name": "camel3",
       "genre": "small",
-      "ascii": "   __,  .-.  .-. \n  (__ _ |  \\/  | _ \n     (_|||\\__/||( /_| \n        ||    ||   |_ \n       _||   _|| \n      `\"\"`  `\"\"`"
+      "ascii": "   __,  .-.  .-. \n  (__ _ |  \\/  | _ \n     (_|||\\__/||( /_| \n        ||    ||   |_ \n       _||   _|| \n      `\"\"`  `\"\"`",
+      "description": "A tiny stylized camel featuring rounded eyes and short legs.",
+      "hashtags": [
+        "#camel",
+        "#smallCamel",
+        "#cute",
+        "#tiny",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel4",
       "genre": "small",
-      "ascii": "              ,,_\n              (=-'\n         /\\\\/\\\\  ))\n       ~/    \\/ |\n       | )___(  |\n       |/     \\\\||\n       |'      |'"
+      "ascii": "              ,,_\n              (=-'\n         /\\\\/\\\\  ))\n       ~/    \\\\/ |\n       | )___(  |\n       |/     \\\\||\n       |'      |'",
+      "description": "A compact camel with a mischievous face and lifted head pose.",
+      "hashtags": [
+        "#camel",
+        "#small",
+        "#ascii",
+        "#funny"
+      ],
+      "length": 0
     },
     {
       "name": "camel5",
       "genre": "medium",
-      "ascii": "       _v   ,,\n      /`|   &&.\n      `-\\\\`-&&&&&.\n         \\\\&&&&&&&\\\\\n          &&#\"\"&& \\\n         / |   |\\\\  x\n         \\\\ |  / /"
+      "ascii": "       _v   ,,\n      /`|   &&.\n      `-\\\\`-&&&&&.\n         \\\\&&&&&&&\\\\\n          &&#\"\"&& \\\n         / |   |\\\\  x\n         \\\\ |  / /",
+      "description": "A medium stylized camel with shaggy fur and energetic posture.",
+      "hashtags": [
+        "#camel",
+        "#mediumCamel",
+        "#ascii",
+        "#furry"
+      ],
+      "length": 0
     },
     {
       "name": "camel6",
       "genre": "big",
-      "ascii": "   //\n _oo\\\\\n(__/ \\\\  _  _\n   \\\\  \\\\/ \\\\/ \\\\\n   (         )\\\\\n    \\\\_______/  \\\\\n     [[] [[]\n     [[] [[]\n                  ,,__\n        ..  ..   / o._)                   .---.\n       /--'/--\\\\  \\\\-'||        .----.    .'     '.\n      /        \\\\_/ / |      .'      '..'         '-.\n    .'\\\\  \\\\__\\\\  __.'.'     .'          i-._\n      )\\\\ |  )\\\\ |      _. '\n     // \\\\\\\\ // \\\\\\\\\n    ||_  \\\\\\\\|_  \\\\\\\\_\n    '--' '--'' '--'"
+      "ascii": "   //\n _oo\\\\\n(__/ \\\\  _  _\n   \\\\  \\\\/ \\\\/ \\\\\n   (         )\\\\\n    \\\\_______/  \\\\\n     [[] [[]\n     [[] [[]\n                  ,,__\n        ..  ..   / o._)                   .---.\n       /--'/--\\\\  \\\\-'||        .----.    .'     '.\n      /        \\\\_/ / |      .'      '..'         '-.\n    .'\\\\  \\\\__\\\\  __.'.'     .'          i-._\n      )\\\\ |  )\\\\ |      _. '\n     // \\\\\\\\ // \\\\\\\\\n    ||_  \\\\\\\\|_  \\\\\\\\_\n    '--' '--'' '--'",
+      "description": "A large camel with heavy shading and detailed scenery around it.",
+      "hashtags": [
+        "#camel",
+        "#detailed",
+        "#bigCamel",
+        "#ascii",
+        "#scene"
+      ],
+      "length": 0
     },
     {
       "name": "camel7",
       "genre": "big",
-      "ascii": "                                                                   ,,_\n ,,_          ,,_          ,,_                                     (=-'\n (=-'         (=-'         (=-'         ,,_                   /\\\\/\\\\  ))\n  )) `.../\\\\/\\\\  )) `.../\\\\/\\\\  )) `.       (=-'         ,,_    ~/    \\\\/ |\n\\\\/ |   ~/    \\\\/ |   ~/    \\\\/ |   `./\\\\/\\\\  )) `.       (=-'   | )___(  |\n(  |   | )___(  |   | )___(  |   ~/    \\\\/ |   `./\\\\/\\\\  )) `.'|/     ` \\\\\n'/ |   |/     \\\\| \\\\   \\\\|    \\\\||   | )___(  |   ~/    \\\\/ |    |'       '\\\n/  '   |'      |  '  '\\\\     |'   |/    '/ |   | )___(  |\n                                 |'    /  '    \\\\|    \\\\||\n                                               '\\\\     |'"
+      "ascii": "                                                                   ,,_\n ,,_          ,,_          ,,_                                     (=-'\n (=-'         (=-'         (=-'         ,,_                   /\\\\/\\\\  ))\n  )) `.../\\\\/\\\\  )) `.../\\\\/\\\\  )) `.       (=-'         ,,_    ~/    \\\\/ |\n\\\\/ |   ~/    \\\\/ |   ~/    \\\\/ |   `./\\\\/\\\\  )) `.       (=-'   | )___(  |\n(  |   | )___(  |   | )___(  |   ~/    \\\\/ |   `./\\\\/\\\\  )) `.'|/     ` \\\\\n'/ |   |/     \\\\| \\\\   \\\\|    \\\\||   | )___(  |   ~/    \\\\/ |    |'       '\\\n/  '   |'      |  '  '\\\\     |'   |/    '/ |   | )___(  |\n                                 |'    /  '    \\\\|    \\\\||\n                                               '\\\\     |'",
+      "description": "A repeating pattern of camels walking in a line like a marching caravan.",
+      "hashtags": [
+        "#camels",
+        "#caravan",
+        "#ascii",
+        "#bigCamel",
+        "#pattern"
+      ],
+      "length": 0
     },
     {
       "name": "camel8",
       "genre": "medium",
-      "ascii": "        _\n    .--' |\n   /___^ |     .--.\n       ) |    /    \\\\\n      /  |  /`      '.\n     |   '-'    /     \\\\\n     \\\\         |      |\\\\\n      \\\\    /   \\\\      /\\\\|\n       \\\\  /'----`\\\\   /\n       |||       \\\\\\\\ |\n       ((|        ((|\n       |||        |||\n      //_ (       //_("
+      "ascii": "        _\n    .--' |\n   /___^ |     .--.\n       ) |    /    \\\\\n      /  |  /`      '.\n     |   '-'    /     \\\\\n     \\\\         |      |\\\\\n      \\\\    /   \\\\      /\\\\|\n       \\\\  /'----`\\\\   /\n       |||       \\\\\\\\ |\n       ((|        ((|\n       |||        |||\n      //_ (       //_(",
+      "description": "A lanky camel with long limbs and a slanted expressive head.",
+      "hashtags": [
+        "#camel",
+        "#medium",
+        "#ascii",
+        "#stylized"
+      ],
+      "length": 0
     },
     {
       "name": "camel9",
       "genre": "medium",
-      "ascii": " _______\\\\__\n(_. _ ._  _/\n '-' \\\\__. /\n      /  /\n     /  /    .--.  .--.\n    (  (    / '' \\\\/ '' \\\\   \"\n     \\\\  \\\\_.'            \\\\   )\n     ||               _  './\n      |\\\\   \\\\     ___.'\\\\  /\n        '-./   .'    \\\\ |/\n           \\\\| /       )|\\\\\n            |/       // \\\\\\\\\n            |\\\\    __//   \\\\\\\\__\n           //\\\\\\\\  /__/     \\\\\\\\__|\n       .--_/  \\\\_--.\n      /__/      \\\\__\\\\"
+      "ascii": " _______\\\\__\n(_. _ ._  _/\n '-' \\\\__. /\n      /  /\n     /  /    .--.  .--.\n    (  (    / '' \\\\/ '' \\\\   \"\n     \\\\  \\\\_.'            \\\\   )\n     ||               _  './\n      |\\\\   \\\\     ___.'\\\\  /\n        '-./   .'    \\\\ |/\n           \\\\| /       )|\\\\\n            |/       // \\\\\\\\\n            |\\\\    __//   \\\\\\\\__\n           //\\\\\\\\  /__/     \\\\\\\\__|\n       .--_/  \\\\_--.\n      /__/      \\\\__\\\\",
+      "description": "A dramatic side-view camel next to a rocky landscape.",
+      "hashtags": [
+        "#camel",
+        "#medium",
+        "#rocky",
+        "#scene",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel10",
       "genre": "medium",
-      "ascii": "                                                        =--_\n                                         .-\"\"\"\"\"\"-.     |* _)\n                                        /          \\\\   /  /\n                                       /            \\\\_/  /\n           _                          /|                /\n       _-'\"/\\\\                        / |    ____    _.-\"            _\n    _-'   (  '-_            _       (   \\\\  |\\\\  /\\\\  ||           .-'\".\".\n_.-'       '.   `'-._   .-'\"/'.      \"   | |/ /  | |/        _-\"   (   '-_\n             '.      _-\"   (   '-_       \\\\ | /   \\\\ |     _.-'       )     \"-._\n           _.'   _.-'       )     \"-._    ||\\\\    |\\\\\\\\  '\"'        .-'\n         '               .-'          `'  || \\\\\\\\  ||))\n   __  _  ___  _ ____________ _____  ___ _|\\\\ _|\\\\_|\\\\/ _______________  ___   _"
+      "ascii": "                                                        =--_\n                                         .-\"\"\"\"\"\"-.     |* _)\n                                        /          \\\\   /  /\n                                       /            \\\\_/  /\n           _                          /|                /\n       _-'\"/\\\\                        / |    ____    _.-\"            _\n    _-'   (  '-_            _       (   \\\\  |\\\\  /\\\\  ||           .-'\".\".\n_.-'       '.   `'-._   .-'\"/'.      \"   | |/ /  | |/        _-\"   (   '-_\n             '.      _-\"   (   '-_       \\\\ | /   \\\\ |     _.-'       )     \"-._\n           _.'   _.-'       )     \"-._    ||\\\\    |\\\\\\\\  '\"'        .-'\n         '               .-'          `'  || \\\\\\\\  ||))\n   __  _  ___  _ ____________ _____  ___ _|\\\\ _|\\\\_|\\\\/ _______________  ___   _",
+      "description": "A dramatic stylized camel with long legs and exaggerated geometric body shapes.",
+      "hashtags": [
+        "#camel",
+        "#medium",
+        "#ascii",
+        "#abstract",
+        "#stylized"
+      ],
+      "length": 0
     },
     {
       "name": "camel12",
       "genre": "big",
-      "ascii": " ___.-''''-.\n/___  @    |\n',,,,.     |         _.'''''''._\n     '     |        /           \\\n     |     \\\\    _.-'             \\\n     |      '.-'                  '-.\n     |                               ',\n     |                                '',\n      ',,-,                           ':;\n           ',,| ;,,                 ,' ;;\n              ! ; !'',,,',',,,,'!  ;   ;:\n             : ;  ! !       ! ! ;  ;   :;\n             ; ;   ! !      ! !  ; ;   ;,\n            ; ;    ! !     ! !   ; ;     \n            ; ;    ! !    ! !     ; ;\n           ;,,      !,!   !,!     ;,;\n           /_I      L_I   L_I     /_I"
+      "ascii": " ___.-''''-.\n/___  @    |\n',,,,.     |         _.'''''''._\n     '     |        /           \\\n     |     \\\\    _.-'             \\\n     |      '.-'                  '-.\n     |                               ',\n     |                                '',\n      ',,-,                           ':;\n           ',,| ;,,                 ,' ;;\n              ! ; !'',,,',',,,,'!  ;   ;:\n             : ;  ! !       ! ! ;  ;   :;\n             ; ;   ! !      ! !  ; ;   ;,\n            ; ;    ! !     ! !   ; ;     \n            ; ;    ! !    ! !     ; ;\n           ;,,      !,!   !,!     ;,;\n           /_I      L_I   L_I     /_I",
+      "description": "A proud tall camel with ornate decorative markings resembling jewelry.",
+      "hashtags": [
+        "#camel",
+        "#bigCamel",
+        "#decorative",
+        "#ornate",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel13",
       "genre": "medium",
-      "ascii": "  | \n_.|,_\n '|`\n  |   \n                 m   ~)\n                 o    (_/^\\                  v ~)\n               *-|\\\\    /|~|\\\\    w  ~)        o  (_/^\\\n                 |_\n  / / / |   o  (_/^^\\   x-|\\\\  /|~|\\\\\n                              @-|\\\\  /|~|\\\\    |_\\\\/ / / |\n                                |_\\\\/ / / |"
+      "ascii": "  | \n_.|,_\n '|`\n  |   \n                 m   ~)\n                 o    (_/^\\                  v ~)\n               *-|\\\\    /|~|\\\\    w  ~)        o  (_/^\\\n                 |_\n  / / / |   o  (_/^^\\   x-|\\\\  /|~|\\\\\n                              @-|\\\\  /|~|\\\\    |_\\\\/ / / |\n                                |_\\\\/ / / |",
+      "description": "A whimsical abstract camel scene with partially symbolic figures and motion lines.",
+      "hashtags": [
+        "#camel",
+        "#abstract",
+        "#medium",
+        "#whimsical",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel14",
       "genre": "big",
-      "ascii": "                        ,.\n            .          :%%%.    .%%%.    \n       __%%%((\\\\        `%%%%%   .%%%%%\n     /a  ^  '%        %%%% %: ,%  %%\"`\n    '__..  ,'%     .-%:     %-'    %\n     ~~\"\"%:. `     % '          .   `.\n         %% % `   %%           .%:  . \\\n          %%:. `-'   `        .%% . %: :\\\\\n          %(%,%...\"   `%,     %%'   %% ) )\n           %)%%)%%'   )%%%.....- '   \"\\/ (\n           %a:f%%\\\\ % / \\\\`%  \"%%% `   / \\\\))\n            %(%'  % /-. \\\\      '  \\\\ |-. '.\n            `'    |%   `()         \\\\|  `()\n                  ||    /          ()   /\n                  ()   0            |  o\n                   \\\\  /\\\\            o /\n                   o  `            /-|\n                ,-/ `           ,-/"
+      "ascii": "                        ,.\n            .          :%%%.    .%%%.    \n       __%%%((\\\\        `%%%%%   .%%%%%\n     /a  ^  '%        %%%% %: ,%  %%\"`\n    '__..  ,'%     .-%:     %-'    %\n     ~~\"\"%:. `     % '          .   `.\n         %% % `   %%           .%:  . \\\n          %%:. `-'   `        .%% . %: :\\\\\n          %(%,%...\"   `%,     %%'   %% ) )\n           %)%%)%%'   )%%%.....- '   \"\\/ (\n           %a:f%%\\\\ % / \\\\`%  \"%%% `   / \\\\))\n            %(%'  % /-. \\\\      '  \\\\ |-. '.\n            `'    |%   `()         \\\\|  `()\n                  ||    /          ()   /\n                  ()   0            |  o\n                   \\\\  /\\\\            o /\n                   o  `            /-|\n                ,-/ `           ,-/",
+      "description": "A highly detailed artistic camel formed from percentage symbols and rounded horns.",
+      "hashtags": [
+        "#camel",
+        "#bigCamel",
+        "#detailed",
+        "#asciiArt",
+        "#creative"
+      ],
+      "length": 0
     },
     {
       "name": "camel15",
       "genre": "big",
-      "ascii": "                                  *\n-- * -----\n  /|\\\\      ____\n ' | '    {_   o^>       *\n   :        -_  /)\n   :         (   (        .-''`'.\n   .          \\\\   \\\\      /       \\\n   .           \\\\    \\\\   /         \\\n                \\\\    `-'           `'.\n                 \\\\    . '        /    `.\n                  \\\\  ( \\\\  )     (     .')\n   ,,   t          '. |  /       |     (\n  '|``_/^\\\\___        '|  |`'-..-'|   ( ()\n_~~|~/_|_|__/|~~~~~~~ |  / ~~~~~ |   | ~~~~~~~~\n -_  |L[|]L|/         | |\\\\       )   )\n                      ( |(       /  /|\n   ~~ ~  ~ ~~~~       | /\\\\     / /| |\n                      ||  \\\\  _/ / | |\n             ~ ~ ~~~ _|| (_/ (___)_| |\n                    (__)         (____)"
+      "ascii": "                                  *\n-- * -----\n  /|\\\\      ____\n ' | '    {_   o^>       *\n   :        -_  /)\n   :         (   (        .-''`'.\n   .          \\\\   \\\\      /       \\\n   .           \\\\    \\\\   /         \\\n                \\\\    `-'           `'.\n                 \\\\    . '        /    `.\n                  \\\\  ( \\\\  )     (     .')\n   ,,   t          '. |  /       |     (\n  '|``_/^\\\\___        '|  |`'-..-'|   ( ()\n_~~|~/_|_|__/|~~~~~~~ |  / ~~~~~ |   | ~~~~~~~~\n -_  |L[|]L|/         | |\\\\       )   )\n                      ( |(       /  /|\n   ~~ ~  ~ ~~~~       | /\\\\     / /| |\n                      ||  \\\\  _/ / | |\n             ~ ~ ~~~ _|| (_/ (___)_| |\n                    (__)         (____)",
+      "description": "A dramatic fantasy-style camel with armor-like features and symbolic stars.",
+      "hashtags": [
+        "#camel",
+        "#fantasy",
+        "#bigCamel",
+        "#ascii",
+        "#epic"
+      ],
+      "length": 0
     },
     {
       "name": "camel16",
       "genre": "big",
-      "ascii": "                              ________\n                            c' e    -`-\n                         _   )    ___ ~'\n                       .|*|  |   `|\n                       '|+|  |    |\n                      _||*|_ |    |\n                     //`_,__\\\\|    '\n                    //_/  ' \\\\|    |\n                   ///  _    |    |\n                  /,|  /     \\\\   |\n                  |/          \\\\_//\n                   |           \\\\\\+/\n                   |   '      ,/|\n                    \\\\_/   ,__   )\n                     )\\\\   |)   /\n                    (  \\\\  ||  /\n                     ) ') |/ /\n                     # |\\\\ ' /\n                       )(- -)\\\\\n                      // \\\\'( \\\\\n                    _//  | |  \\\\_\n                   //(  _)^(_  )\\\\  . ..\n           ..   '^-  /`( )'\\\\  -^'\n                      '^-' '-^' .. ."
+      "ascii": "                              ________\n                            c' e    -`-\n                         _   )    ___ ~'\n                       .|*|  |   `|\n                       '|+|  |    |\n                      _||*|_ |    |\n                     //`_,__\\\\|    '\n                    //_/  ' \\\\|    |\n                   ///  _    |    |\n                  /,|  /     \\\\   |\n                  |/          \\\\_//\n                   |           \\\\\\+/\n                   |   '      ,/|\n                    \\\\_/   ,__   )\n                     )\\\\   |)   /\n                    (  \\\\  ||  /\n                     ) ') |/ /\n                     # |\\\\ ' /\n                       )(- -)\\\\\n                      // \\\\'( \\\\\n                    _//  | |  \\\\_\n                   //(  _)^(_  )\\\\  . ..\n           ..   '^-  /`( )'\\\\  -^'\n                      '^-' '-^' .. .",
+      "description": "A surreal lanky camel with exaggerated limbs and a quirky facial expression.",
+      "hashtags": [
+        "#camel",
+        "#surreal",
+        "#bigCamel",
+        "#odd",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel17",
       "genre": "medium",
-      "ascii": "      :\n       ::\n   ::::::\n :: o :::\n::::::::::\n ::  :::::\n :   :::::\n :   :::::\n :  :::::\n : ::::::\n : :::::       .,,,.\n : ::::       :::::::\n : ::::::    :::::::::\n :  ::::::::::::::::::::\n  : ::::::::::::::::::::\n   :::::::::::::::::::::\n     :::::::::::::::::::\n      ::::::::::::::::::\n      ::::::      ::::::\n       ::::       ::::::\n       :::         :::::\n       :::         ::: :\n       :::         ::: :\n       :::          :: :\n       :::          ::::\n      ::           :::"
+      "ascii": "      :\n       ::\n   ::::::\n :: o :::\n::::::::::\n ::  :::::\n :   :::::\n :   :::::\n :  :::::\n : ::::::\n : :::::       .,,,.\n : ::::       :::::::\n : ::::::    :::::::::\n :  ::::::::::::::::::::\n  : ::::::::::::::::::::\n   :::::::::::::::::::::\n     :::::::::::::::::::\n      ::::::::::::::::::\n      ::::::      ::::::\n       ::::       ::::::\n       :::         :::::\n       :::         ::: :\n       :::         ::: :\n       :::          :: :\n       :::          ::::\n      ::           :::",
+      "description": "A vertically abstract camel made of layered symbols resembling a towering creature.",
+      "hashtags": [
+        "#camel",
+        "#abstract",
+        "#medium",
+        "#tower",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel18",
       "genre": "big",
-      "ascii": "     _    _\n    ( \\\\__//) \n    .'     )\n __/b d  .  )\n(_Y_`,     .)\n `--'-,-'  )\n      (.  )\n      (   )\n     (   )\n    ( . )         .---.\n   (    )        (     )\n   (   . )      (  .    )\n   (      )    (      .  ),\n   ( .     `\"'`  .       `)\\\\\n    (      .              .)\\\\\n    ((  .      .   (   .   )\\\\\\\\\n    ((       .    (        ) \\\\\\\\\n     ((     )     _( .   . )  \\\\\\\\\n     ( ( .   )\"'\"`(.(     )   ( ;\n     ( (    )      ( ( . )     '\\n      |~(  )        |~(  )\n      | ||~|        | ||~|\n      | || |        | || |    \n     _| || |       _| || |\n    /___(| |      /___(| |\n       /___(         /___("
+      "ascii": "     _    _\n    ( \\\\__//) \n    .'     )\n __/b d  .  )\n(_Y_`,     .)\n `--'-,-'  )\n      (.  )\n      (   )\n     (   )\n    ( . )         .---.\n   (    )        (     )\n   (   . )      (  .    )\n   (      )    (      .  ),\n   ( .     `\"'`  .       `)\\\\\n    (      .              .)\\\\\n    ((  .      .   (   .   )\\\\\\\\\n    ((       .    (        ) \\\\\\\\\n     ((     )     _( .   . )  \\\\\\\\\n     ( ( .   )\"'\"`(.(     )   ( ;\n     ( (    )      ( ( . )     '\\n      |~(  )        |~(  )\n      | ||~|        | ||~|\n      | || |        | || |    \n     _| || |       _| || |\n    /___(| |      /___(| |\n       /___(         /___(",
+      "description": "A thick, rounded camel with a relaxed pose surrounded by multiple curved shadows.",
+      "hashtags": [
+        "#camel",
+        "#rounded",
+        "#bigCamel",
+        "#cute",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel19",
       "genre": "medium",
-      "ascii": "       \\\\ \n       |)\n   /~~~ ]\n / .o.  ]\n( ,      ]\n \\\\~~]   ]\n :   ]  ]\n :   ]  ]\n :  [  ]\n : [  ]\n : [  ]        .---.\n : [   [      [     ]\n :  [   ] _ _[       ]_\n :  [                  ]\n  : [                   ]\n   :[                    ]\n     [                   ]\n      [      _ _ _      ]\n      [    ]      [     ]\n       [  ]       [    ]\n       [ ]         [   ]\n       [ ]         [   T]\n       [ ]         [   ]\n       [ ]          [  ]\n       [ ]          [  ]\n      [[           [[["
+      "ascii": "       \\\\ \n       |)\n   /~~~ ]\n / .o.  ]\n( ,      ]\n \\\\~~]   ]\n :   ]  ]\n :   ]  ]\n :  [  ]\n : [  ]\n : [  ]        .---.\n : [   [      [     ]\n :  [   ] _ _[       ]_\n :  [                  ]\n  : [                   ]\n   :[                    ]\n     [                   ]\n      [      _ _ _      ]\n      [    ]      [     ]\n       [  ]       [    ]\n       [ ]         [   ]\n       [ ]         [   T]\n       [ ]         [   ]\n       [ ]          [  ]\n       [ ]          [  ]\n      [[           [[[",
+      "description": "A clever blocky camel built entirely from bracket shapes, almost robotic.",
+      "hashtags": [
+        "#camel",
+        "#blocky",
+        "#medium",
+        "#robotic",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel20",
       "genre": "big",
-      "ascii": "                         MMMMMMM                     MMMMMMMMMMMMMM\n                      MMMMMMMMMMMM                MMMMMMMMMMMMMMMMMMM\n                    MMMMMMMMMMMMMMMM                MMMMMMMMMMMMMMMMM\n               MMMMMMMMMMMMMMMMMMMMMM              MMMMMMMMMMMMM   MM\n            MMMMMMMMMMMMMMMMMMMMMMMMMMM            MMMMMMMMMMM\n          MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM        MMMMMMMMMMMM\n        MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM    MMMMMMMMMMMMM\n        MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n      MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n     MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n    MMMMMMMM  MMMMMMMM  MMMMMMMMMMMMMMMMMMMM\n   MMMMM  M   MMMMMMM       MNMMMMMMMMMMMMMM\n MMMMM  MMMM  MMMMMM          MMMMM  MMMMMM\nMMMMMM  MMM  MMMMMM           MMMMM   MMMMM\nMMMMM     M  MMMMM            MMMM     MMMM\nMMMM        MMMMM           MMMMMM      MMMMM\n MMM       MMMMMMM          NMMMMM      MMMMM\n MM         MMMM             MMMM         MMM\nMMMM         MMMM           MMMM           MM\n MMM          MMM           MMM            MMM\n MMMM         MMMM         MMM              MMM\n MMMMM         MMM        MMMM               MMM\n   MMMMMM      MMMM        MMMM              MMMMMM\n      MMM       MMMMM       MMMM              MMMMMM\n                                              MMMMM\n                    MMMMM"
+      "ascii": "                         MMMMMMM                     MMMMMMMMMMMMMM\n                      MMMMMMMMMMMM                MMMMMMMMMMMMMMMMMMM\n                    MMMMMMMMMMMMMMMM                MMMMMMMMMMMMMMMMM\n               MMMMMMMMMMMMMMMMMMMMMM              MMMMMMMMMMMMM   MM\n            MMMMMMMMMMMMMMMMMMMMMMMMMMM            MMMMMMMMMMM\n          MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM        MMMMMMMMMMMM\n        MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM    MMMMMMMMMMMMM\n        MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n       MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n      MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n     MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM\n    MMMMMMMM  MMMMMMMM  MMMMMMMMMMMMMMMMMMMM\n   MMMMM  M   MMMMMMM       MNMMMMMMMMMMMMMM\n MMMMM  MMMM  MMMMMM          MMMMM  MMMMMM\nMMMMMM  MMM  MMMMMM           MMMMM   MMMMM\nMMMMM     M  MMMMM            MMMM     MMMM\nMMMM        MMMMM           MMMMMM      MMMMM\n MMM       MMMMMMM          NMMMMM      MMMMM\n MM         MMMM             MMMM         MMM\nMMMM         MMMM           MMMM           MM\n MMM          MMM           MMM            MMM\n MMMM         MMMM         MMM              MMM\n MMMMM         MMM        MMMM               MMM\n   MMMMMM      MMMM        MMMM              MMMMMM\n      MMM       MMMMM       MMMM              MMMMMM\n                                              MMMMM\n                    MMMMM",
+      "description": "A giant camel entirely shaped from dense M characters forming its silhouette.",
+      "hashtags": [
+        "#camel",
+        "#typography",
+        "#bigCamel",
+        "#letters",
+        "#ascii"
+      ],
+      "length": 0
     },
-
     {
       "name": "camel21",
       "genre": "big",
-      "ascii": "       _.---.\n       / ==.=-)\n      (=-_==-=)\n       \\-==_-0/         /\\             /\\\n       | o  o \\         ||             ||\n       |\\     |         ()             ()\n     _ \\\\`-_-/\\ .-;.    ||   ___       ||\n   /' | \\\\\\/// / //|    ().-'/\\/\\-.    ()\n   |\\\\ \\ |\\\\// | / / \\   || --.-'__'/\\..||\n   | ||| \\\\|| /| |  |   ().\\---'  |||-.()\n   | \\ |  \\_/|/ ./  |   |\\__/\\_/\\-\\||-.||\n___|  |\\   |/ ////  |---|               |-----------\n   \\ / ||  |\\_/'|  '|   `---------------'\n   | |/|\\  |    |   |\n   \\ \\/'|  |    / | |\n   |  | \\  |   /;   /\n    \\/| |  /  |  / |\n     \\|\\_(/_  /'  '/            ,--'\\\n      |  |\\ `-\\ . /          .-/__ / \\. -\\           .--.\n      /  /|    /-'           \\/      / _/    .-''-./  .'\\\n      | |\\ \\   |             (\\__.-')   \\    | /-'|.'-   \\\n      |/ | |    \\            \\/  \\--'    |  _/|   |      |\n     /   / \\    |            /.. /  .-'  |-'  /   |      |\n    |   |   |    \\           \\__/  /     /   |            \\\n    |   /   \\    |           \\__/-''    .   .'   ' \\       \\\n    |   |   |    |             |.'\\-        /   .           \\\n   /   /    \\     \\           /, - /    \\_.'                |\n   |  /|     |:    :           |\\/'                      |  |\n   `-' |   ' `-._-'           |            /             /   \\\n       |  .      \\           .|           |             /     |\n       \\          |         / |               ______.--'   __.'\n       |  .       \\        |   \\ __/    /---''    `-.---'-'\n       |   `       |       \\__/ /      /\n       |    \\      |            `-:\n       |          /\n       `._     _.'\n       (__`._.'  |\n              (__)"
+      "ascii": "       _.---.\n       / ==.=-)\n      (=-_==-=)\n       \\-==_-0/         /\\             /\\\n       | o  o \\         ||             ||\n       |\\     |         ()             ()\n     _ \\\\`-_-/\\ .-;.    ||   ___       ||\n   /' | \\\\\\/// / //|    ().-'/\\/\\-.    ()\n   |\\\\ \\ |\\\\// | / / \\   || --.-'__'/\\..||\n   | ||| \\\\|| /| |  |   ().\\---'  |||-.()\n   | \\ |  \\_/|/ ./  |   |\\__/\\_/\\-\\||-.||\n___|  |\\   |/ ////  |---|               |-----------\n   \\ / ||  |\\_/'|  '|   `---------------'\n   | |/|\\  |    |   |\n   \\ \\/'|  |    / | |\n   |  | \\  |   /;   /\n    \\/| |  /  |  / |\n     \\|\\_(/_  /'  '/            ,--'\\\n      |  |\\ `-\\ . /          .-/__ / \\. -\\           .--.\n      /  /|    /-'           \\/      / _/    .-''-./  .'\\\n      | |\\ \\   |             (\\__.-')   \\    | /-'|.'-   \\\n      |/ | |    \\            \\/  \\--'    |  _/|   |      |\n     /   / \\    |            /.. /  .-'  |-'  /   |      |\n    |   |   |    \\           \\__/  /     /   |            \\\n    |   /   \\    |           \\__/-''    .   .'   ' \\       \\\n    |   |   |    |             |.'\\-        /   .           \\\n   /   /    \\     \\           /, - /    \\_.'                |\n   |  /|     |:    :           |\\/'                      |  |\n   `-' |   ' `-._-'           |            /             /   \\\n       |  .      \\           .|           |             /     |\n       \\          |         / |               ______.--'   __.'\n       |  .       \\        |   \\ __/    /---''    `-.---'-'\n       |   `       |       \\__/ /      /\n       |    \\      |            `-:\n       |          /\n       `._     _.'\n       (__`._.'  |\n              (__)",
+      "description": "A towering camel warrior with detailed saddle, eyes, and dramatic scenery.",
+      "hashtags": [
+        "#camel",
+        "#epic",
+        "#warrior",
+        "#bigCamel",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel22",
       "genre": "big",
-      "ascii": "                                                              #\n                                                     #     ###\n                                                   ####    ###\n                                                ########    ###\n                                           ###  ########   ####\n                                          ####  #    ###  #####\n                                #         ###   #    ### # ####\n                              ####         ###   #  ### #  ###\n                           ########       ####    # ####  #######\n                          #########    ## ####     ###############\n                           #    ###   #  ######     ###############\n                           #    ###  #     ###      ###############\n                           #   ###  #    #####        ####    #####\n                           #   ### #     #####         ##     ###\n       #                   #   ####   #########        ##       ##\n       ##       ###        #   #################       ##       ##\n   ######      #####        #  ##################      ##       ##\n ########     #####         ##   ###############      ##       ##\n##########      #######            ##############     ##       ##\n ##  #####     #####               #####    #####\n #   ####      ######               ###      ## #\n #   ####   #########               ##       ##\n #  ####    #########               ##       ##\n #  ####   #  #######               ##       ##\n # #####  #    #####                ##       ##\n # ####  #     ######               ##       ##\n # ######    #########             ##       W##\n #  ####################\n  # #####################\n   #######################\n     #####################\n      ###################\n      ######      #######\n       ####       ######\n       ###         #####\n       ###         ### #\n       ###         ### #\n       ###          ## #\n       ###          ####\n      ##           ###"
+      "ascii": "                                                              #\n                                                     #     ###\n                                                   ####    ###\n                                                ########    ###\n                                           ###  ########   ####\n                                          ####  #    ###  #####\n                                #         ###   #    ### # ####\n                              ####         ###   #  ### #  ###\n                           ########       ####    # ####  #######\n                          #########    ## ####     ###############\n                           #    ###   #  ######     ###############\n                           #    ###  #     ###      ###############\n                           #   ###  #    #####        ####    #####\n                           #   ### #     #####         ##     ###\n       #                   #   ####   #########        ##       ##\n       ##       ###        #   #################       ##       ##\n   ######      #####        #  ##################      ##       ##\n ########     #####         ##   ###############      ##       ##\n##########      #######            ##############     ##       ##\n ##  #####     #####               #####    #####\n #   ####      ######               ###      ## #\n #   ####   #########               ##       ##\n #  ####    #########               ##       ##\n #  ####   #  #######               ##       ##\n # #####  #    #####                ##       ##\n # ####  #     ######               ##       ##\n # ######    #########             ##       W##\n #  ####################\n  # #####################\n   #######################\n     #####################\n      ###################\n      ######      #######\n       ####       ######\n       ###         #####\n       ###         ### #\n       ###         ### #\n       ###          ## #\n       ###          ####\n      ##           ###",
+      "description": "A huge blocky camel built from hash symbols resembling a pixelated monument.",
+      "hashtags": [
+        "#camel",
+        "#pixel",
+        "#monument",
+        "#bigCamel",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel23",
       "genre": "big",
-      "ascii": "                                 __\n                     .--.      .'  `.\n                   .' . :\\    /   :  L\n                   F     :\\  /   . : |        .-._\n                  /     :  \\/        J      .' ___\\\n                 J     :   /      : : L    /--'   ``.\n                 F      : J           |  .<'.o.  `-'>\n                /        J             L \\_>.   .--w)\n               J        /              \\_/|   . `-__|\n               F                        / `    -' /|)\n              |   :                    J   '        |\n             .'   ':                   |    .    :  \\\n            /                          J      :     |L\n           F                              |     \\   ||\n          F .                             |   :      |\n         F  |                             ; .   :  : F\n        /   |                                     : J\n       J    J             )                ;        F\n       |     L           /      .:'                J\n    .-'F:     L        ./       :: :       .       F\n    `-'F:     .\\    `:.J         :::.             J\n      J       ::\\    `:|        |::::\\            |\n      J        |:`.    J        :`:::\\            F\n       L   :':/ \\ `-`.  \\       : `:::|        .-'\n       |     /   L    >--\\         :::|`.    .-'\n       J    J    |    |   L     .  :::: :`, /\n        L   F    J    )   |        >::   : /\n        |  J      L   F   \\     .-.:'   . /\n        ): |     J   /     `-   | |   .--'\n        /  |     |: J        L  J J   )\n        L  |     |: |        L   F|   /\n        \\: J     \\:  L       \\  /  L |\n         L |      \\  |        F|   | )\n         J F       \\ J       J |   |J\n          L|        \\ \\      | |   | L\n          J L        \\ \\     F \\   F |\n           L\\         \\ \\   J   | J   L\n          /__\\_________)_`._)_  |_/   \\_____\n                              \"\"   `\"\"\""
+      "ascii": "                                 __\n                     .--.      .'  `.\n                   .' . :\\    /   :  L\n                   F     :\\  /   . : |        .-._\n                  /     :  \\/        J      .' ___\\\n                 J     :   /      : : L    /--'   ``.\n                 F      : J           |  .<'.o.  `-'>\n                /        J             L \\_>.   .--w)\n               J        /              \\_/|   . `-__|\n               F                        / `    -' /|)\n              |   :                    J   '        |\n             .'   ':                   |    .    :  \\\n            /                          J      :     |L\n           F                              |     \\   ||\n          F .                             |   :      |\n         F  |                             ; .   :  : F\n        /   |                                     : J\n       J    J             )                ;        F\n       |     L           /      .:'                J\n    .-'F:     L        ./       :: :       .       F\n    `-'F:     .\\    `:.J         :::.             J\n      J       ::\\    `:|        |::::\\            |\n      J        |:`.    J        :`:::\\            F\n       L   :':/ \\ `-`.  \\       : `:::|        .-'\n       |     /   L    >--\\         :::|`.    .-'\n       J    J    |    |   L     .  :::: :`, /\n        L   F    J    )   |        >::   : /\n        |  J      L   F   \\     .-.:'   . /\n        ): |     J   /     `-   | |   .--'\n        /  |     |: J        L  J J   )\n        L  |     |: |        L   F|   /\n        \\: J     \\:  L       \\  /  L |\n         L |      \\  |        F|   | )\n         J F       \\ J       J |   |J\n          L|        \\ \\      | |   | L\n          J L        \\ \\     F \\   F |\n           L\\         \\ \\   J   | J   L\n          /__\\_________)_`._)_  |_/   \\_____\n                              \"\"   `\"\"\"",
+      "description": "An elaborate scene with a camel depicted among people in a storybook style.",
+      "hashtags": [
+        "#camel",
+        "#scene",
+        "#story",
+        "#bigCamel",
+        "#asciiArt"
+      ],
+      "length": 0
     },
     {
       "name": "camel24",
       "genre": "medium",
-      "ascii": "a'!   _,,_ a'!   _,,_     a'!   _,,_\n  \\_/    \\  \\_/    \\      \\_/    \\.-,\n   \\, /-( /'-,\\, /-( /'-,    \\, /-( /\n   //\\ //\\\\   //\\ //\\\\       //\\ //\\\\"
+      "ascii": "a'!   _,,_ a'!   _,,_     a'!   _,,_\n  \\_/    \\  \\_/    \\      \\_/    \\.-,\n   \\, /-( /'-,\\, /-( /'-,    \\, /-( /\n   //\\ //\\\\   //\\ //\\\\       //\\ //\\\\",
+      "description": "A trio of playful camel heads repeated in a rhythmic pattern.",
+      "hashtags": [
+        "#camel",
+        "#pattern",
+        "#medium",
+        "#cute",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel25",
       "genre": "medium",
-      "ascii": "      ~)\n      .(_/^\\           ~)       ~)        ~)\n       ./|~|\\   ~)    .'(_/^\\'..'(_/^\\'..'(_/^\\. ~)\n       /'/'/'|''(_/^\\'   /|~|\\    /|~|\\    /|~|\\''(_/^\\\n                 /|~|\\  / / / |  / / / |  / / / |  /|~|\\\n                / / / |                           / / / |"
+      "ascii": "      ~)\n      .(_/^\\           ~)       ~)        ~)\n       ./|~|\\   ~)    .'(_/^\\'..'(_/^\\'..'(_/^\\. ~)\n       /'/'/'|''(_/^\\'   /|~|\\    /|~|\\    /|~|\\''(_/^\\\n                 /|~|\\  / / / |  / / / |  / / / |  /|~|\\\n                / / / |                           / / / |",
+      "description": "Tall repeating camels with long necks, arranged like a marching parade.",
+      "hashtags": [
+        "#camel",
+        "#parade",
+        "#mediumCamel",
+        "#repeating",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel26",
       "genre": "small",
-      "ascii": "   __,  .-.  .-. \n  (__ _ |  \\/  | _ \n     (_|||\\__/||( /_| \n        ||    ||   |_ \n       _||   _|| \n      `\"\"`  `\"\"`"
+      "ascii": "   __,  .-.  .-. \n  (__ _ |  \\/  | _ \n     (_|||\\__/||( /_| \n        ||    ||   |_ \n       _||   _|| \n      `\"\"`  `\"\"`",
+      "description": "A tiny compact camel with expressive facial features and stubby legs.",
+      "hashtags": [
+        "#camel",
+        "#smallCamel",
+        "#tiny",
+        "#ascii",
+        "#cute"
+      ],
+      "length": 0
     },
     {
       "name": "camel27",
       "genre": "small",
-      "ascii": "              ,,_\n              (=-'\n         /\\\\/\\\\  ))\n       ~/    \\\\/ |\n       | )___(  |\n       |/     \\\\||\n       |'      |'"
+      "ascii": "              ,,_\n              (=-'\n         /\\\\/\\\\  ))\n       ~/    \\\\/ |\n       | )___(  |\n       |/     \\\\||\n       |'      |'",
+      "description": "A simple little camel with a quirky pose and forward-facing expression.",
+      "hashtags": [
+        "#camel",
+        "#small",
+        "#quirky",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel28",
       "genre": "medium",
-      "ascii": "       _v   ,,\n      /`|   &&.\n      `-\\\\`-&&&&&.\n         \\\\&&&&&&&\\\\\n          &&#\"\"&& \\\\\n         / |   |\\\\  x\n         \\\\ |  / /"
+      "ascii": "       _v   ,,\n      /`|   &&.\n      `-\\\\`-&&&&&.\n         \\\\&&&&&&&\\\\\n          &&#\"\"&& \\\\\n         / |   |\\\\  x\n         \\\\ |  / /",
+      "description": "A fuzzy camel with rough textured fur and dynamic posture.",
+      "hashtags": [
+        "#camel",
+        "#medium",
+        "#fuzzy",
+        "#ascii"
+      ],
+      "length": 0
     },
     {
       "name": "camel29",
       "genre": "big",
-      "ascii": "   //\n _oo\\\\\n(__/ \\\\  _  _\n   \\\\  \\\\/ \\\\/ \\\\\n   (         )\\\\\n    \\\\_______/  \\\\\n     [[] [[]\n     [[] [[]\n                  ,,__\n        ..  ..   / o._)                   .---.\n       /--'/--\\\\  \\\\-'||        .----.    .'     '.\n      /        \\\\_/ / |      .'      '..'         '-.\n    .'\\\\  \\\\__\\\\  __.'.'     .'          i-._\n      )\\\\ |  )\\\\ |      _. '\n     // \\\\\\\\ // \\\\\\\\\n    ||_  \\\\\\\\|_  \\\\\\\\_\n    '--' '--'' '--'"
+      "ascii": "   //\n _oo\\\\\n(__/ \\\\  _  _\n   \\\\  \\\\/ \\\\/ \\\\\n   (         )\\\\\n    \\\\_______/  \\\\\n     [[] [[]\n     [[] [[]\n                  ,,__\n        ..  ..   / o._)                   .---.\n       /--'/--\\\\  \\\\-'||        .----.    .'     '.\n      /        \\\\_/ / |      .'      '..'         '-.\n    .'\\\\  \\\\__\\\\  __.'.'     .'          i-._\n      )\\\\ |  )\\\\ |      _. '\n     // \\\\\\\\ // \\\\\\\\\n    ||_  \\\\\\\\|_  \\\\\\\\_\n    '--' '--'' '--'",
+      "description": "A large camel framed within a scenic desert moment, with rocks and shadows around it.",
+      "hashtags": [
+        "#camel",
+        "#bigCamel",
+        "#scene",
+        "#detailed",
+        "#ascii"
+      ],
+      "length": 0
     }
   ]
 }

@@ -19,6 +19,9 @@ let format_clients (clients : client list) =
   !string
 
 let run_counting_server sockadr () =
+  let%lwt () =
+    Lwt_io.printf "Starting counting server on %s\n" (string_of_addr sockadr)
+  in
   (* Define server keys*)
   let client_handler client_addr (client_in, client_out) : unit Lwt.t =
     let%lwt () = Lwt_io.write_line client_out (format_clients !all_clients) in
@@ -81,6 +84,9 @@ let run_counting_server sockadr () =
   Lwt.return (server ())
 
 let run_messaging_server sockadr () =
+  let%lwt () =
+    Lwt_io.printf "Starting messaging server on %s\n" (string_of_addr sockadr)
+  in
   let srv_priv_key = Encrypt.(generate_private_key ()) in
   let pub_key = Z.to_string Encrypt.(get_public_key srv_priv_key) in
   let client_handler client_addr (client_in, client_out) : unit Lwt.t =

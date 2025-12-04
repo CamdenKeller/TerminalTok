@@ -119,7 +119,7 @@ let run () : unit Lwt.t =
     let%lwt () = Lwt_io.write_line msg_server_out name in
     let%lwt () = Lwt_io.flush msg_server_out in
     let video_data = Json_parser.parse_videos "data/videos.json" in
-    let videos = List.map (fun (_, _, f) -> f) video_data in
+
     let ascii_lst = Json_parser.parse_camels "data/ascii.json" in
     let rec session_loop () =
       (* allows program to catch Cntrl C exit *)
@@ -127,7 +127,12 @@ let run () : unit Lwt.t =
       try%lwt
         let%lwt () = Lwt_io.printl "Generating recommendation..." in
         let video =
-          Recommender.HybridRecommender.recommend_hybrid user ascii_lst
+          if video_mode then
+            if !video_index < List.length video_data then
+              let name, genre, file = List.nth video_data !video_index in
+              Some { title = name; genre = genre; ascii = file }
+            else None
+          else Recommender.HybridRecommender.recommend_hybrid user ascii_lst
         in
 
         match video with
@@ -142,16 +147,11 @@ let run () : unit Lwt.t =
             let%lwt () =
               (* handles playing videos *)
               if video_mode then (
-                if !video_index >= List.length videos then
-                  Lwt_io.printl "No more videos :(" >>= fun () ->
-                  Lwt.return_unit
-                else
-                  let video_file = List.nth videos !video_index in
-                  incr video_index;
-                  let%lwt () = Lwt_io.printl "Loading video..." in
-                  play_ascii_video video_file)
+                incr video_index;
+                let%lwt () = Lwt_io.printl "Loading video..." in
+                play_ascii_video v.ascii)
               (* handles displaying ascii *)
-                else Lwt_io.printl v.ascii
+              else Lwt_io.printl v.ascii
             in
 
             (* Handle user input for this "Tok" *)

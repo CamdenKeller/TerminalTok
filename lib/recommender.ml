@@ -165,7 +165,10 @@ module HybridRecommender = struct
       List.filter (fun v -> not (has_watched user v)) videos
     in
 
-    if unwatched = [] then None
+    if unwatched = [] then 
+      (* If all videos watched, pick a random one to rewatch *)
+      if videos = [] then None
+      else Some (List.nth videos (Random.int (List.length videos)))
     else if List.length user.vid_history = 0 then
       Some (List.nth unwatched (Random.int (List.length unwatched)))
     else if List.length user.vid_history < 3 then

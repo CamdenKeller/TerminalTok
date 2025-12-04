@@ -1,7 +1,8 @@
 (library
  (name terminal_tok)
- (libraries yojson lwt.unix zarith cryptokit batteries csv)
- (preprocess (pps lwt_ppx ppx_inline_test))
- (instrumentation (backend bisect_ppx))
- (inline_tests)
-)
+ (libraries yojson lwt.unix zarith batteries csv cryptokit)
+ (preprocess
+  (pps lwt_ppx ppx_inline_test))
+ (instrumentation
+  (backend bisect_ppx))
+ (inline_tests))

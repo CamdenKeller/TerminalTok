@@ -32,12 +32,30 @@ let secret_to_key (secret : Z.t) =
 
 (* in this case, our shared secret is the key *)
 
-let encrypt_msg (msg : string) (key : string) : string = msg ^ key
-(* let transform = Cryptokit.Cipher.aes key Cipher.Encrypt in transform_string
-   transform msg *)
+(** [get_repeated_key key reps] Returns a the [key] repeated [reps] times *)
+let get_repeated_key (key : string) (reps : int) : string =
+  let rep_key = ref key in
+  for i = 0 to reps do
+    rep_key := !rep_key ^ key
+  done;
+  !rep_key
 
-let decrypt_msg (msg : string) (key : string) : string =
-  let last = String.length msg - String.length key in
-  BatString.slice ~first:0 ~last msg
+let encrypt_msg (msg : string) (key : string) : string =
+  (* We'll use char encoding with XOR to do a simple encryption *)
+  let msg_len = String.length msg in
+  let key_len = String.length key in
+  let reps = (msg_len / key_len) + 1 in
+
+  let repeated_key = get_repeated_key key reps in
+
+  String.mapi
+    (fun i ch ->
+      let msg_char_code = Char.code ch in
+      let key_char_code = Char.code repeated_key.[i] in
+
+      char_of_int (msg_char_code lxor key_char_code))
+    msg
+
+let decrypt_msg (msg : string) (key : string) : string = encrypt_msg msg key
 (* let transform = Cryptokit.Cipher.aes key Cipher.Decrypt in transform_string
    transform msg *)

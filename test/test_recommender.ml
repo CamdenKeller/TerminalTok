@@ -379,6 +379,7 @@ let tests =
       "many interactions" >:: test_many_interactions;
       "watchtime variations" >:: test_watchtime_variations;
       "liked not liked mix" >:: test_liked_not_liked_mix;
+      "test multiple genre balance" >:: test_multiple_genre_balance;
       ]
 
 let _ = run_test_tt_main tests

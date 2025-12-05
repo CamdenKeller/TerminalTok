@@ -18,61 +18,71 @@ let add_to_history (inter : interaction) (user : user) =
   Storage.save_user user
 
 (* Play a video using mpv in ASCII mode *)
-let play_ascii_video (file : string) : unit Lwt.t =
+let play_ascii_video (file : string) : int Lwt.t =
   let command =
     ("mpv", [| "mpv"; "--vo=tct"; "--input-conf=data/mpv_input.conf"; file |])
   in
   let process = Lwt_process.open_process_none command in
-  process#status >|= fun _ -> ()
+  process#status >|= function
+  | Unix.WEXITED n -> n
+  | _ -> 0
 
 (** [run ()] starts the TerminalTok session *)
-let run () : unit Lwt.t =
-  let video_index = ref 0 in
+let run_offline_session () =
+  let%lwt () =
+    Lwt_io.printl
+      "\n\
+       === Offline Mode: DinoTok ===\n\
+       Press ENTER to start the game.\n\
+       Jump over the 67s and try to get the highest score you can!\n\
+       UP ARROW (↑) or ENTER: Jump\n\
+       DOWN ARROW (↓): Switch between standing position and sliding position\n\
+       RIGHT ARROW (→): Front flip\n\
+       LEFT ARROW (←): Backflip\n\
+       'q': Quit to Main Menu"
+  in
+  let%lwt _ = Lwt_io.read_line Lwt_io.stdin in
+  Dinotok.run_dino ()
 
+let run_online_session () =
   let%lwt () =
     Lwt_io.printlf
-      "Instructions:\n\
-      \  - Select Online mode to connect to the server and share Toks.\n\
-       Once the session has begun...\n\
+      "\n\
+       === Online Mode: TerminalTok ===\n\
+       Instructions:\n\
       \  - Enter 'L' to like/unlike\n\
-      \  - Enter 'Q' to quit the session\n\
+      \  - Enter 'Q' to return to the main menu\n\
       \  - Enter 'C' to enter an encrypted chat with other users\n\
       \  - Enter anything else to go to the next Tok\n\n\
       \  Video Controls:\n\
       \  - 'p' or SPACE to pause/resume\n\
-      \  - 's' or 'q' to skip video\n\n\
-       (press ENTER to begin session)"
+      \  - 's' to skip video\n\
+      \  - 'q' to quit to main menu"
   in
-  let%lwt () = Lwt_io.printl "Select mode: (1) Online (2) Offline" in
+  let%lwt () =
+    Lwt_io.printl "\nSelect playback mode: (1) Normal ASCII (2) Video ASCII"
+  in
   let%lwt choice = Lwt_io.read_line Lwt_io.stdin in
-  let online_mode =
+  let video_mode =
     match choice with
-    | "1" -> true
+    | "2" -> true
     | _ -> false
   in
-  let start_session () =
-    let%lwt () =
-      Lwt_io.printl "Select playback mode: (1) Normal ASCII (2) Video ASCII"
-    in
-    let%lwt choice = Lwt_io.read_line Lwt_io.stdin in
-    let video_mode =
-      match choice with
-      | "2" -> true
-      | _ -> false
-    in
 
-    let localhost_5000 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5000) in
-    let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001) in
+  let localhost_5000 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5000) in
+  let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001) in
 
-    (* Start server automatically *)
-    let server_process = 
-      Lwt_process.open_process_none 
-        ("dune", [| "dune"; "exec"; "bin/server.exe" |]) 
-    in
-    
-    (* Give server time to start *)
-    let%lwt () = Lwt_unix.sleep 2.0 in
+  (* Start server automatically *)
+  let server_process = 
+    Lwt_process.open_process_none 
+      ("dune", [| "dune"; "exec"; "bin/server.exe" |]) 
+  in
+  
+  (* Give server time to start *)
+  let%lwt () = Lwt_io.printl "Starting server..." in
+  let%lwt () = Lwt_unix.sleep 2.0 in
 
+  try%lwt
     (* Note: we need two pairs of in/out channels: one for multiple *)
     let%lwt cnt_server_in, cnt_server_out, msg_server_in, msg_server_out =
       try%lwt
@@ -84,7 +94,6 @@ let run () : unit Lwt.t =
         in
         Lwt.return (cnt_server_in, cnt_server_out, msg_server_in, msg_server_out)
       with _ -> 
-        server_process#terminate;
         raise Server_not_started
     in
 
@@ -161,6 +170,7 @@ let run () : unit Lwt.t =
     let video_data = Json_parser.parse_videos "data/videos.json" in
 
     let ascii_lst = Json_parser.parse_camels "data/ascii.json" in
+    let video_index = ref 0 in
     let rec session_loop () =
       (* allows program to catch Cntrl C exit *)
       Sys.catch_break true;
@@ -176,34 +186,37 @@ let run () : unit Lwt.t =
 
         match video with
         | None ->
-            let%lwt () = Lwt_io.printl "No videos; program ended" in
+            let%lwt () = Lwt_io.printl "No videos; returning to menu" in
             Lwt.return_unit
         | Some v ->
             let watch = { video = v; liked = false; watchtime = 0.0 } in
             let start_time = Unix.gettimeofday () in
 
             (* Play either video or ASCII art *)
-            let%lwt () =
+            let%lwt exit_code =
               (* handles playing videos *)
               if video_mode then (
                 incr video_index;
                 let%lwt () = Lwt_io.printl "Loading video..." in
                 play_ascii_video v.ascii)
               (* handles displaying ascii *)
-                else Lwt_io.printl v.ascii
+                else (
+                  let%lwt () = Lwt_io.printl v.ascii in
+                  Lwt.return 0
+                )
             in
+
+            if exit_code = 4 then (
+              watch.watchtime <- Unix.gettimeofday () -. start_time;
+              add_to_history watch user;
+              Lwt.return_unit
+            ) else
 
             (* Handle user input for this "Tok" *)
             let rec session_input () =
               let%lwt input = Lwt_io.read_line Lwt_io.stdin in
               match String.uppercase_ascii input with
               | "Q" ->
-                  (* close channels to signal to server *)
-                  let%lwt () = Lwt_io.close cnt_server_out in
-                  let%lwt () = Lwt_io.close cnt_server_in in
-                  let%lwt () = Lwt_io.close msg_server_out in
-                  let%lwt () = Lwt_io.close msg_server_in in
-                  server_process#terminate;
                   watch.watchtime <- Unix.gettimeofday () -. start_time;
                   add_to_history watch user;
                   Lwt.return_unit
@@ -267,11 +280,6 @@ let run () : unit Lwt.t =
             session_input ()
       with
       | Sys.Break ->
-          let%lwt () = Lwt_io.close cnt_server_out in
-          let%lwt () = Lwt_io.close cnt_server_in in
-          let%lwt () = Lwt_io.close msg_server_out in
-          let%lwt () = Lwt_io.close msg_server_in in
-          server_process#terminate;
           Lwt.return_unit
       | Failure msg ->
           let%lwt () =
@@ -280,21 +288,47 @@ let run () : unit Lwt.t =
           Lwt.return ()
     in
 
-    session_loop ()
-  in
-  let start_dino () : unit Lwt.t =
-    Lwt_io.printl
-      "\n\
-       Press ENTER to start the game.\n\
-       Jump over the 67s and try to get the highest score you can!\n\
-       UP ARROW (↑) or ENTER: Jump\n\
-       DOWN ARROW (↓): Switch between standing position and sliding position\n\
-       RIGHT ARROW (→): Front flip\n\
-       LEFT ARROW (←): Backflip"
-    >>= fun () ->
-    Lwt_io.read_line_opt Lwt_io.stdin >>= fun _ -> Dinotok.run_dino ()
-  in
-  if online_mode then start_session () else start_dino ()
+    let%lwt () = session_loop () in
+    
+    (* Cleanup *)
+    let%lwt () = Lwt_io.close cnt_server_out in
+    let%lwt () = Lwt_io.close cnt_server_in in
+    let%lwt () = Lwt_io.close msg_server_out in
+    let%lwt () = Lwt_io.close msg_server_in in
+    server_process#terminate;
+    Lwt.return_unit
+
+  with 
+  | Server_not_started ->
+      server_process#terminate;
+      Lwt_io.printl "Error: Server failed to start."
+  | e ->
+      server_process#terminate;
+      Lwt_io.printl ("Error in online session: " ^ Printexc.to_string e)
+
+let rec main_menu () =
+  let%lwt () = Lwt_io.printl "\n=== TerminalTok Main Menu ===" in
+  let%lwt () = Lwt_io.printl "1. Online Mode (Chat & Videos)" in
+  let%lwt () = Lwt_io.printl "2. Offline Mode (Dino Game)" in
+  let%lwt () = Lwt_io.printl "3. Quit" in
+  let%lwt () = Lwt_io.printl "Select an option: " in
+  let%lwt choice = Lwt_io.read_line Lwt_io.stdin in
+  match choice with
+  | "1" -> 
+      let%lwt () = run_online_session () in
+      main_menu ()
+  | "2" ->
+      let%lwt () = run_offline_session () in
+      main_menu ()
+  | "3" -> Lwt.return_unit
+  | _ -> 
+      let%lwt () = Lwt_io.printl "Invalid option, please try again." in
+      main_menu ()
+
+(** [run ()] starts the TerminalTok session *)
+let run () : unit Lwt.t =
+  let%lwt () = Lwt_io.printl "Welcome to TerminalTok!" in
+  main_menu ()
 
 let _ =
   try

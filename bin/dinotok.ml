@@ -304,7 +304,7 @@ let rec print_loop () =
           Lwt_unix.sleep 1.8 >>= fun () ->
           restore_terminal ();
           print_endline msg;
-          exit 0
+          Lwt.return_unit
       | e ->
           restore_terminal ();
           raise e)
@@ -359,15 +359,30 @@ let rec input_loop () =
       | _ ->
           (* ESC not starting an arrow sequence — ignore *)
           input_loop ())
+  (* Quit game *)
+  | Some 'q' -> Lwt.return_unit
   (* All other keys: ignore, same as before *)
   | Some _ -> input_loop ()
   | None -> input_loop ()
 
 (* --- Program entry with terminal mode setup/cleanup --- *)
+let reset_game () =
+  fps := 0.051;
+  input_flag := false;
+  input_data.until_input <- 0;
+  input_data.move <- STAND;
+  score := 0;
+  obs := 0;
+  for i = 0 to max_obs - 1 do
+    obstacles.(i) <- { loc = -8; height = 0 }
+  done;
+  cooldown := Lwt.return_unit
+
 let run_dino () : unit Lwt.t =
+  reset_game ();
   enable_raw_mode ();
   Lwt.finalize
-    (fun () -> Lwt.join [ print_loop (); input_loop () ])
+    (fun () -> Lwt.pick [ print_loop (); input_loop () ])
     (fun () ->
       restore_terminal ();
       Lwt.return_unit)

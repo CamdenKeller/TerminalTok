@@ -1,4 +1,4 @@
-(* Diffie-Hellman Encryption Algorithm *)
+(* Adapted Diffie-Hellman Encryption Algorithm *)
 open Cryptokit
 
 (* Large prime number (public) *)

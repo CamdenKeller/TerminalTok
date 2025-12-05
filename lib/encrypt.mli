@@ -1,3 +1,5 @@
+(* Adapted Diffie-Hellman Encryption Algorithm *)
+
 val generate_private_key : unit -> Z.t
 (** [generate_private_key ()] generates a random private key for Diffie-Hellman
     key exchange. *)

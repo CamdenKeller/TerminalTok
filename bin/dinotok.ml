@@ -594,7 +594,8 @@ let rec print_loop () =
           Lwt_unix.sleep 1.8 >>= fun () ->
           restore_terminal ();
           print_endline msg;
-          exit 0
+          let%lwt () = Lwt_unix.sleep 1.8 in
+          Lwt.return_unit
       | e ->
           restore_terminal ();
           Lwt.fail e)

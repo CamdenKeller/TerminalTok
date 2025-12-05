@@ -39,7 +39,9 @@ let run_offline_session () =
        DOWN ARROW (↓): Switch between standing position and sliding position\n\
        RIGHT ARROW (→): Front flip\n\
        LEFT ARROW (←): Backflip\n\
-       'q': Quit to Main Menu"
+       F: At some point, text will appear saying you can send an F16. Press F \
+       to send the F16 and drop a 67 bomb.\n\
+      \       'q': Quit to Main Menu"
   in
   let%lwt _ = Lwt_io.read_line Lwt_io.stdin in
   Dinotok.run_dino ()

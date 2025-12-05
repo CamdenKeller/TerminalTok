@@ -2,8 +2,6 @@
  (name test_storage)
  (modules test_storage)
  (libraries ounit2 terminal_tok zarith csv)
- (instrumentation
-  (backend bisect_ppx))
  (deps
   (glob_files_rec ../data/*)))
 
@@ -11,33 +9,28 @@
  (name test_recommender)
  (modules test_recommender)
  (libraries ounit2 terminal_tok zarith csv)
- (instrumentation
-  (backend bisect_ppx)))
+)
 
 (test
  (name test_encryption)
  (modules test_encryption)
  (libraries ounit2 terminal_tok zarith csv)
- (instrumentation
-  (backend bisect_ppx)))
+)
 
 (test
  (name test_json_parser)
  (modules test_json_parser)
  (libraries ounit2 terminal_tok zarith csv)
- (instrumentation
-  (backend bisect_ppx)))
+)
 
 (test
  (name test_cf_recommender)
  (modules test_cf_recommender)
  (libraries ounit2 terminal_tok zarith csv)
- (instrumentation
-  (backend bisect_ppx)))
+)
 
 (test
  (name test_server_utils)
  (modules test_server_utils)
  (libraries ounit2 terminal_tok zarith csv)
- (instrumentation
-  (backend bisect_ppx)))
+)

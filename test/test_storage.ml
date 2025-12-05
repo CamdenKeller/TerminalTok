@@ -113,6 +113,99 @@ let test_overwrite_user _ =
       let loaded_interaction = List.hd loaded_user.vid_history in
       assert_equal ~printer:pp_string "NewVideo" loaded_interaction.video.title
 
+let test_load_video_list _ =
+  let temp_dir = "test_videos_" ^ string_of_int (Random.int 10000) in
+  (try Unix.mkdir temp_dir 0o755 with _ -> ());
+  
+  let touch filename =
+    let oc = open_out (Filename.concat temp_dir filename) in
+    close_out oc
+  in
+  
+  touch "vid1.mp4";
+  touch "vid2.mov";
+  touch "vid3.mkv";
+  touch "ignore.txt";
+  touch "image.jpg";
+
+  let videos = Storage.load_video_list temp_dir in
+  
+  let files = Sys.readdir temp_dir in
+  Array.iter (fun f -> Sys.remove (Filename.concat temp_dir f)) files;
+  Unix.rmdir temp_dir;
+
+  assert_equal ~printer:pp_int 3 (List.length videos);
+  let base_names = List.map Filename.basename videos in
+  assert_bool "vid1.mp4" (List.mem "vid1.mp4" base_names);
+  assert_bool "vid2.mov" (List.mem "vid2.mov" base_names);
+  assert_bool "vid3.mkv" (List.mem "vid3.mkv" base_names);
+  assert_bool "ignore.txt" (not (List.mem "ignore.txt" base_names))
+
+let test_load_user_partial_data _ =
+  let user_name = "PartialUser" in
+  let user_dir = Filename.concat "data/users" user_name in
+  if not (Sys.file_exists "data/users") then Unix.mkdir "data/users" 0o755;
+  if not (Sys.file_exists user_dir) then Unix.mkdir user_dir 0o755;
+  let history_file = Filename.concat user_dir "history.csv" in
+  let oc = open_out history_file in
+  output_string oc "Video1,action,true,10.0\n";
+  close_out oc;
+  
+  (match Storage.load_user user_name with
+  | Some u -> 
+      assert_equal 1 (List.length u.vid_history);
+      assert_equal 0 (Hashtbl.length u.genre_counts)
+  | None -> assert_failure "Should load user with only history");
+
+  Sys.remove history_file;
+
+  let stats_file = Filename.concat user_dir "stats.csv" in
+  let oc = open_out stats_file in
+  output_string oc "action,5\n";
+  close_out oc;
+
+  (match Storage.load_user user_name with
+  | Some u -> 
+      assert_equal 0 (List.length u.vid_history);
+      assert_equal 5 (Hashtbl.find u.genre_counts "action")
+  | None -> assert_failure "Should load user with only stats");
+
+  Sys.remove stats_file;
+  Unix.rmdir user_dir
+
+let test_load_user_malformed_data _ =
+  let user_name = "MalformedUser" in
+  let user_dir = Filename.concat "data/users" user_name in
+  if not (Sys.file_exists "data/users") then Unix.mkdir "data/users" 0o755;
+  if not (Sys.file_exists user_dir) then Unix.mkdir user_dir 0o755;
+
+  let history_file = Filename.concat user_dir "history.csv" in
+  let oc = open_out history_file in
+  output_string oc "Video1,action\n"; (* 2 cols *)
+  output_string oc "Video2,action,true,10.0,extra\n"; (* 5 cols *)
+  close_out oc;
+
+  let stats_file = Filename.concat user_dir "stats.csv" in
+  let oc = open_out stats_file in
+  output_string oc "action,5,extra\n";
+  close_out oc;
+
+  (match Storage.load_user user_name with
+  | Some u ->
+      assert_equal 2 (List.length u.vid_history);
+      let v1 = List.hd u.vid_history in
+      assert_equal "Unknown" v1.video.title;
+      
+      let v2 = List.nth u.vid_history 1 in
+      assert_equal "Unknown" v2.video.title;
+
+      assert_equal 0 (Hashtbl.length u.genre_counts)
+  | None -> assert_failure "Should load user despite malformed data");
+
+  Sys.remove history_file;
+  Sys.remove stats_file;
+  Unix.rmdir user_dir
+
 let tests =
   "storage tests"
   >::: [
@@ -121,6 +214,9 @@ let tests =
          "save user with special chars" >:: test_save_user_with_special_chars;
          "save user empty history" >:: test_save_user_empty_history;
          "overwrite user" >:: test_overwrite_user;
+         "load video list" >:: test_load_video_list;
+         "load user partial data" >:: test_load_user_partial_data;
+         "load user malformed data" >:: test_load_user_malformed_data;
        ]
 
 let _ = run_test_tt_main tests

@@ -72,16 +72,6 @@ let run_online_session () =
   let localhost_5000 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5000) in
   let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001) in
 
-  (* Start server automatically *)
-  let server_process = 
-    Lwt_process.open_process_none 
-      ("dune", [| "dune"; "exec"; "bin/server.exe" |]) 
-  in
-  
-  (* Give server time to start *)
-  let%lwt () = Lwt_io.printl "Starting server..." in
-  let%lwt () = Lwt_unix.sleep 2.0 in
-
   try%lwt
     (* Note: we need two pairs of in/out channels: one for multiple *)
     let%lwt cnt_server_in, cnt_server_out, msg_server_in, msg_server_out =
@@ -93,8 +83,7 @@ let run_online_session () =
           Lwt_io.open_connection localhost_5001
         in
         Lwt.return (cnt_server_in, cnt_server_out, msg_server_in, msg_server_out)
-      with _ -> 
-        raise Server_not_started
+      with _ -> raise Server_not_started
     in
 
     (* names function as unique keys*)
@@ -200,87 +189,84 @@ let run_online_session () =
                 let%lwt () = Lwt_io.printl "Loading video..." in
                 play_ascii_video v.ascii)
               (* handles displaying ascii *)
-                else (
-                  let%lwt () = Lwt_io.printl v.ascii in
-                  Lwt.return 0
-                )
+                else
+                let%lwt () = Lwt_io.printl v.ascii in
+                Lwt.return 0
             in
 
             if exit_code = 4 then (
               watch.watchtime <- Unix.gettimeofday () -. start_time;
               add_to_history watch user;
-              Lwt.return_unit
-            ) else
-
-            (* Handle user input for this "Tok" *)
-            let rec session_input () =
-              let%lwt input = Lwt_io.read_line Lwt_io.stdin in
-              match String.uppercase_ascii input with
-              | "Q" ->
-                  watch.watchtime <- Unix.gettimeofday () -. start_time;
-                  add_to_history watch user;
-                  Lwt.return_unit
-              | "L" ->
-                  watch.liked <- not watch.liked;
-                  let%lwt () =
-                    Lwt_io.printl
-                      ("You have "
-                      ^ (if watch.liked then "" else "un")
-                      ^ "liked this video")
-                  in
-                  add_to_history watch user;
-                  session_input ()
-              | "C" ->
-                  (* Signal to cnt server to return clients *)
-                  let%lwt () = Lwt_io.write_line cnt_server_out "" in
-                  let%lwt clients = client_loop () in
-
-                  let continue = ref true in
-
-                  let%lwt () = Lwt_io.printl ("Active users: " ^ clients) in
-                  let%lwt () =
-                    (* bug how we write such that there is always only one list
-                       of users in the stacl *)
-                    Lwt_io.printl "Start chatting! Enter 'R' to go back"
-                  in
-                  (* try%lwt *)
-                  let rec handle_message () =
-                    (* generate the promises to be run *)
-                    let%lwt () = Lwt_io.printl "\nEnter message: " in
-
-                    let server_prom =
-                      (* on completion of server read it calls the map *)
-                      let%lwt msg = Lwt_io.read_line msg_server_in in
-                      Lwt_io.printl ("\n" ^ msg)
+              Lwt.return_unit)
+            else
+              (* Handle user input for this "Tok" *)
+              let rec session_input () =
+                let%lwt input = Lwt_io.read_line Lwt_io.stdin in
+                match String.uppercase_ascii input with
+                | "Q" ->
+                    watch.watchtime <- Unix.gettimeofday () -. start_time;
+                    add_to_history watch user;
+                    Lwt.return_unit
+                | "L" ->
+                    watch.liked <- not watch.liked;
+                    let%lwt () =
+                      Lwt_io.printl
+                        ("You have "
+                        ^ (if watch.liked then "" else "un")
+                        ^ "liked this video")
                     in
-                    let input_prom =
-                      let%lwt msg = Lwt_io.read_line Lwt_io.stdin in
-                      if String.uppercase_ascii msg = "R" then (
-                        continue := false;
-                        Lwt.return_unit)
-                      else
-                        let encrpt_msg = Encrypt.encrypt_msg msg key in
-                        let%lwt () =
-                          Lwt_io.write_line msg_server_out encrpt_msg
-                        in
-                        Lwt_io.flush msg_server_out
+                    add_to_history watch user;
+                    session_input ()
+                | "C" ->
+                    (* Signal to cnt server to return clients *)
+                    let%lwt () = Lwt_io.write_line cnt_server_out "" in
+                    let%lwt clients = client_loop () in
+
+                    let continue = ref true in
+
+                    let%lwt () = Lwt_io.printl ("Active users: " ^ clients) in
+                    let%lwt () =
+                      (* bug how we write such that there is always only one
+                         list of users in the stacl *)
+                      Lwt_io.printl "Start chatting! Enter 'R' to go back"
                     in
+                    (* try%lwt *)
+                    let rec handle_message () =
+                      (* generate the promises to be run *)
+                      let%lwt () = Lwt_io.printl "\nEnter message: " in
 
-                    let%lwt message = Lwt.pick [ input_prom; server_prom ] in
+                      let server_prom =
+                        (* on completion of server read it calls the map *)
+                        let%lwt msg = Lwt_io.read_line msg_server_in in
+                        Lwt_io.printl ("\n" ^ msg)
+                      in
+                      let input_prom =
+                        let%lwt msg = Lwt_io.read_line Lwt_io.stdin in
+                        if String.uppercase_ascii msg = "R" then (
+                          continue := false;
+                          Lwt.return_unit)
+                        else
+                          let encrpt_msg = Encrypt.encrypt_msg msg key in
+                          let%lwt () =
+                            Lwt_io.write_line msg_server_out encrpt_msg
+                          in
+                          Lwt_io.flush msg_server_out
+                      in
 
-                    if !continue then handle_message () else Lwt.return_unit
-                  in
-                  let%lwt () = handle_message () in
-                  session_loop ()
-              | _ ->
-                  watch.watchtime <- Unix.gettimeofday () -. start_time;
-                  add_to_history watch user;
-                  session_loop ()
-            in
-            session_input ()
+                      let%lwt message = Lwt.pick [ input_prom; server_prom ] in
+
+                      if !continue then handle_message () else Lwt.return_unit
+                    in
+                    let%lwt () = handle_message () in
+                    session_loop ()
+                | _ ->
+                    watch.watchtime <- Unix.gettimeofday () -. start_time;
+                    add_to_history watch user;
+                    session_loop ()
+              in
+              session_input ()
       with
-      | Sys.Break ->
-          Lwt.return_unit
+      | Sys.Break -> Lwt.return_unit
       | Failure msg ->
           let%lwt () =
             Lwt_io.printl ("An error occurred with this video:" ^ msg)
@@ -289,22 +275,17 @@ let run_online_session () =
     in
 
     let%lwt () = session_loop () in
-    
-    (* Cleanup *)
+
     let%lwt () = Lwt_io.close cnt_server_out in
     let%lwt () = Lwt_io.close cnt_server_in in
     let%lwt () = Lwt_io.close msg_server_out in
-    let%lwt () = Lwt_io.close msg_server_in in
-    server_process#terminate;
-    Lwt.return_unit
-
-  with 
+    Lwt_io.close msg_server_in
+  with
   | Server_not_started ->
-      server_process#terminate;
-      Lwt_io.printl "Error: Server failed to start."
-  | e ->
-      server_process#terminate;
-      Lwt_io.printl ("Error in online session: " ^ Printexc.to_string e)
+      Lwt_io.printl
+        "You must first run 'dune exec bin/server.exe' in a separate terminal \
+         to start the server. Please make sure that the server is running."
+  | e -> Lwt_io.printl ("Error in online session: " ^ Printexc.to_string e)
 
 let rec main_menu () =
   let%lwt () = Lwt_io.printl "\n=== TerminalTok Main Menu ===" in
@@ -314,14 +295,14 @@ let rec main_menu () =
   let%lwt () = Lwt_io.printl "Select an option: " in
   let%lwt choice = Lwt_io.read_line Lwt_io.stdin in
   match choice with
-  | "1" -> 
+  | "1" ->
       let%lwt () = run_online_session () in
       main_menu ()
   | "2" ->
       let%lwt () = run_offline_session () in
       main_menu ()
   | "3" -> Lwt.return_unit
-  | _ -> 
+  | _ ->
       let%lwt () = Lwt_io.printl "Invalid option, please try again." in
       main_menu ()
 

@@ -3,11 +3,13 @@
  (name main)
  (modules main dinotok)
  (libraries terminal_tok str lwt lwt.unix batteries)
- (preprocess (pps lwt_ppx ppx_inline_test)))
+ (preprocess
+  (pps lwt_ppx ppx_inline_test)))
 
 (executable
  (public_name terminal-tok-server)
  (name server)
  (modules server)
  (libraries terminal_tok str lwt lwt.unix batteries)
- (preprocess (pps lwt_ppx)))
+ (preprocess
+  (pps lwt_ppx)))

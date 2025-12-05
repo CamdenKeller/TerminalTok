@@ -64,6 +64,8 @@ let run_counting_server sockadr () =
     try%lwt handle_message ()
     with _ ->
       (* Handle clients leaving *)
+      let%lwt () = Lwt_io.close client_in in
+      let%lwt () = Lwt_io.close client_out in
       let new_clients = List.filter (fun x -> x.name <> name) !all_clients in
       all_clients := new_clients;
       Lwt_list.iter_p
@@ -158,6 +160,8 @@ let run_messaging_server sockadr () =
     try%lwt receive_message () with
     | End_of_file ->
         (* Handle clients leaving *)
+        let%lwt () = Lwt_io.close client_in in
+        let%lwt () = Lwt_io.close client_out in
         let%lwt removed_client =
           (* filter out this client from the all_clients list if it catches a
              break *)
@@ -167,13 +171,10 @@ let run_messaging_server sockadr () =
         let new_clients = List.filter (fun x -> x.name <> name) !all_clients in
         all_clients := new_clients;
         Lwt.return_unit
-    | Failure msg ->
-        Lwt_io.printf "%s (%s) has left the chat. Reason of departure: %s" name
-          (string_of_addr client_addr)
-          msg
     | _ ->
-        Lwt_io.printf
-          "%s (%s) has left the chat. Reason of departure: Unknown\n" name
+        let%lwt () = Lwt_io.close client_in in
+        let%lwt () = Lwt_io.close client_out in
+        Lwt_io.printf "%s (%s) has left the chat." name
           (string_of_addr client_addr)
   in
   let server () =

@@ -7,6 +7,17 @@ module MLRecommender = struct
   (* Embedding dimension for matrix factorization *)
   let embedding_dim = 5
 
+  (** Abstraction Function:
+      [embeddings] represents the learned latent factors for users and videos in the matrix factorization model.
+      - [user_embeddings] maps user names to their latent vectors.
+      - [video_embeddings] maps video titles to their latent vectors.
+      - [learning_rate] is the step size for gradient descent.
+      - [lambda] is the regularization parameter.
+
+      Representation Invariant:
+      - [learning_rate] > 0.0.
+      - [lambda] >= 0.0.
+      - All arrays in [user_embeddings] and [video_embeddings] have length [embedding_dim]. *)
   type embeddings = {
     user_embeddings : (string, float array) Hashtbl.t;
         (* user_name -> embedding *)

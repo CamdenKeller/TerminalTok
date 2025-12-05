@@ -32,9 +32,7 @@ let run () : unit Lwt.t =
   let%lwt () =
     Lwt_io.printlf
       "Instructions:\n\
-      \  - Select Online mode to connect to the server and share Toks. You \
-       must first run 'dune exec bin/server.exe' in a separate terminal to \
-       start the server.\n\
+      \  - Select Online mode to connect to the server and share Toks.\n\
        Once the session has begun...\n\
       \  - Enter 'L' to like/unlike\n\
       \  - Enter 'Q' to quit the session\n\
@@ -66,6 +64,15 @@ let run () : unit Lwt.t =
     let localhost_5000 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5000) in
     let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001) in
 
+    (* Start server automatically *)
+    let server_process = 
+      Lwt_process.open_process_none 
+        ("dune", [| "dune"; "exec"; "bin/server.exe" |]) 
+    in
+    
+    (* Give server time to start *)
+    let%lwt () = Lwt_unix.sleep 2.0 in
+
     (* Note: we need two pairs of in/out channels: one for multiple *)
     let%lwt cnt_server_in, cnt_server_out, msg_server_in, msg_server_out =
       try%lwt
@@ -76,7 +83,9 @@ let run () : unit Lwt.t =
           Lwt_io.open_connection localhost_5001
         in
         Lwt.return (cnt_server_in, cnt_server_out, msg_server_in, msg_server_out)
-      with _ -> raise Server_not_started
+      with _ -> 
+        server_process#terminate;
+        raise Server_not_started
     in
 
     (* names function as unique keys*)
@@ -194,6 +203,7 @@ let run () : unit Lwt.t =
                   let%lwt () = Lwt_io.close cnt_server_in in
                   let%lwt () = Lwt_io.close msg_server_out in
                   let%lwt () = Lwt_io.close msg_server_in in
+                  server_process#terminate;
                   watch.watchtime <- Unix.gettimeofday () -. start_time;
                   add_to_history watch user;
                   Lwt.return_unit
@@ -260,7 +270,9 @@ let run () : unit Lwt.t =
           let%lwt () = Lwt_io.close cnt_server_out in
           let%lwt () = Lwt_io.close cnt_server_in in
           let%lwt () = Lwt_io.close msg_server_out in
-          Lwt_io.close msg_server_in
+          let%lwt () = Lwt_io.close msg_server_in in
+          server_process#terminate;
+          Lwt.return_unit
       | Failure msg ->
           let%lwt () =
             Lwt_io.printl ("An error occurred with this video:" ^ msg)

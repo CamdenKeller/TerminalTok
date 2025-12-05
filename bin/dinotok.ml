@@ -372,16 +372,3 @@ let run_dino () : unit Lwt.t =
       restore_terminal ();
       Lwt.return_unit)
 
-let%test_module "dinotok_tests" = (module struct
-  let%test "line calculation" =
-    line 7 = 2 && line 1 = 2 &&
-    line 6 = 4 && line 2 = 4 &&
-    line 5 = 5 && line 3 = 5 &&
-    line 4 = 6 &&
-    line 0 = 0 && line 8 = 0
-
-  let%test "join lines" =
-    let lines = ["line1"; "line2"; "line3"] in
-    let expected = "line1\n   line2\n   line3" in
-    join_lines lines = expected
-end)

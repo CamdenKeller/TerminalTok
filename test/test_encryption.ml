@@ -1,6 +1,13 @@
 open OUnit2
 open Terminal_tok
 
+(* Pretty printers for OUnit *)
+let pp_string s = Printf.sprintf "%S" s (* prints with quotes *)
+let pp_z z = Z.to_string z (* for big integers *)
+
+(* For byte lists or encrypted messages if needed later *)
+let pp_bytes b = Bytes.to_string b |> pp_string
+
 let test_encryption_functions _ =
   Encrypt.(
     let priv_key_A = generate_private_key () in
@@ -12,12 +19,12 @@ let test_encryption_functions _ =
     let pub_key_B = get_public_key priv_key_B in
     let ss_a = get_shared_secret pub_key_B priv_key_A in
     let ss_b = get_shared_secret pub_key_A priv_key_B in
-    assert_equal ss_a ss_b;
+    assert_equal ~printer:pp_z ss_a ss_b;
 
     let key = secret_to_key ss_a in
     let e_msg = encrypt_msg msg key in
 
-    assert_equal msg (decrypt_msg e_msg key))
+    assert_equal ~printer:pp_string msg (decrypt_msg e_msg key))
 
 let test_key_uniqueness _ =
   let k1 = Encrypt.generate_private_key () in
@@ -33,7 +40,7 @@ let test_shared_secret_commutativity _ =
   let ss_a = Encrypt.get_shared_secret pub_b priv_a in
   let ss_b = Encrypt.get_shared_secret pub_a priv_b in
 
-  assert_equal ss_a ss_b
+  assert_equal ~printer:pp_z ss_a ss_b
 
 let test_dh_on_empty_message _ =
   Encrypt.(
@@ -46,12 +53,12 @@ let test_dh_on_empty_message _ =
     let pub_key_B = get_public_key priv_key_B in
     let ss_a = get_shared_secret pub_key_B priv_key_A in
     let ss_b = get_shared_secret pub_key_A priv_key_B in
-    assert_equal ss_a ss_b;
+    assert_equal ~printer:pp_z ss_a ss_b;
 
     let key = secret_to_key ss_a in
     let e_msg = encrypt_msg msg key in
 
-    assert_equal msg (decrypt_msg e_msg key))
+    assert_equal ~printer:pp_string msg (decrypt_msg e_msg key))
 
 let test_dh_on_empty_message _ =
   Encrypt.(
@@ -64,12 +71,12 @@ let test_dh_on_empty_message _ =
     let pub_key_B = get_public_key priv_key_B in
     let ss_a = get_shared_secret pub_key_B priv_key_A in
     let ss_b = get_shared_secret pub_key_A priv_key_B in
-    assert_equal ss_a ss_b;
+    assert_equal ~printer:pp_z ss_a ss_b;
 
     let key = secret_to_key ss_a in
     let e_msg = encrypt_msg msg key in
 
-    assert_equal msg (decrypt_msg e_msg key))
+    assert_equal ~printer:pp_string msg (decrypt_msg e_msg key))
 
 let test_dh_on_newline _ =
   Encrypt.(
@@ -82,12 +89,12 @@ let test_dh_on_newline _ =
     let pub_key_B = get_public_key priv_key_B in
     let ss_a = get_shared_secret pub_key_B priv_key_A in
     let ss_b = get_shared_secret pub_key_A priv_key_B in
-    assert_equal ss_a ss_b;
+    assert_equal ~printer:pp_z ss_a ss_b;
 
     let key = secret_to_key ss_a in
     let e_msg = encrypt_msg msg key in
 
-    assert_equal msg (decrypt_msg e_msg key))
+    assert_equal ~printer:pp_string msg (decrypt_msg e_msg key))
 
 let test_dh_on_long_string _ =
   Encrypt.(
@@ -104,15 +111,15 @@ let test_dh_on_long_string _ =
     let pub_key_B = get_public_key priv_key_B in
     let ss_a = get_shared_secret pub_key_B priv_key_A in
     let ss_b = get_shared_secret pub_key_A priv_key_B in
-    assert_equal ss_a ss_b;
+    assert_equal ~printer:pp_z ss_a ss_b;
 
     let key = secret_to_key ss_a in
     let e_msg = encrypt_msg msg key in
 
-    assert_equal msg (decrypt_msg e_msg key))
+    assert_equal ~printer:pp_string msg (decrypt_msg e_msg key))
 
 let tests =
-  "utils tests"
+  "encryption tests"
   >::: [
          "encryption functions" >:: test_encryption_functions;
          "key uniqueness" >:: test_key_uniqueness;

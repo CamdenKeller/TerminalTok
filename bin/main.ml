@@ -79,7 +79,6 @@ let run_online_session () =
   let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001) in
 
   try%lwt
-    (* Note: we need two pairs of in/out channels: one for multiple *)
     let%lwt cnt_server_in, cnt_server_out, msg_server_in, msg_server_out =
       try%lwt
         let%lwt cnt_server_in, cnt_server_out =
@@ -92,7 +91,7 @@ let run_online_session () =
       with _ -> raise Server_not_started
     in
 
-    (* names function as unique keys*)
+    (* names function as unique keys for each user *)
     let rec client_loop () =
       let%lwt first =
         Lwt.pick
@@ -143,8 +142,6 @@ let run_online_session () =
     let private_key = Encrypt.generate_private_key () in
     let pub_key = Encrypt.get_public_key private_key in
 
-    (* here we must have the server write its shared public key so we can find
-       the shared secret*)
     let%lwt server_pub_key = Lwt_io.read_line msg_server_in in
 
     let shared_secret =
@@ -256,8 +253,6 @@ let run_online_session () =
 
                     let%lwt () = Lwt_io.printl ("Active users: " ^ clients) in
                     let%lwt () =
-                      (* bug how we write such that there is always only one
-                         list of users in the stacl *)
                       Lwt_io.printl "Start chatting! Enter 'R' to go back"
                     in
                     (* try%lwt *)
@@ -342,11 +337,7 @@ let run () : unit Lwt.t =
   main_menu ()
 
 let _ =
-  try
-    (* this code allows us to run bin/server.ml from main.ml*)
-    (* let _ : Lwt_process.process_none = Lwt_process.open_process_none ("", [| "dune"; "exec"; "bin/server.exe" |]) in  *)
-    Lwt_main.run (run ())
-  with
+  try Lwt_main.run (run ()) with
   | Sys.Break -> print_endline "\nThank you for joining!"
   | Server_not_started ->
       print_endline

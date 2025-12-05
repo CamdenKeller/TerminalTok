@@ -66,7 +66,9 @@ let run_counting_server sockadr () =
       (* Handle clients leaving *)
       let%lwt () = Lwt_io.close client_in in
       let%lwt () = Lwt_io.close client_out in
-      let new_clients = List.filter (fun x -> x.cnt_name <> name) !all_clients in
+      let new_clients =
+        List.filter (fun x -> x.cnt_name <> name) !all_clients
+      in
       all_clients := new_clients;
       Lwt_list.iter_p
         (fun client ->
@@ -168,7 +170,9 @@ let run_messaging_server sockadr () =
           Lwt.return (List.filter (fun x -> x.cnt_name = name) !all_clients)
         in
 
-        let new_clients = List.filter (fun x -> x.cnt_name <> name) !all_clients in
+        let new_clients =
+          List.filter (fun x -> x.cnt_name <> name) !all_clients
+        in
         all_clients := new_clients;
         Lwt.return_unit
     | _ ->

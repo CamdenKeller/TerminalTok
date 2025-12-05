@@ -214,7 +214,6 @@ let test_multiple_genre_balance _ =
   let inter2 = make_interaction v2 true 5.0 in
   let inter3 = make_interaction v3 true 5.0 in
   let inter4 = make_interaction v4 true 5.0 in
-
   let user =
     make_user_with_history "balanced" [ inter1; inter2; inter3; inter4 ]
   in
@@ -224,20 +223,137 @@ let test_multiple_genre_balance _ =
   assert_bool "Should recommend either action or comedy"
     (result = Some v5 || result = Some v6)
 
+let test_hybrid_with_embeddings _ =
+  let v1 = make_video "Action1" "action" in
+  let v2 = make_video "Action2" "action" in
+  let v3 = make_video "Action3" "action" in
+
+  let inter1 = make_interaction v1 true 10.0 in
+  let inter2 = make_interaction v2 true 9.0 in
+
+  let user = make_user_with_history "test_user" [ inter1; inter2 ] in
+  
+  (* Create mock embeddings *)
+  let mock_embeddings = [
+    (user, [| 1.0; 0.0; 0.0; 0.0; 0.0 |]);
+  ] in
+
+  let videos = [ v3 ] in
+
+  let result = HybridRecommender.recommend_hybrid user videos mock_embeddings in
+  match result with
+  | None -> assert_failure "Should recommend a video with embeddings"
+  | Some video -> assert_equal v3 video
+
+let test_content_based_score_missing_genre _ =
+    let v1 = make_video "Action1" "action" in
+    let v2 = make_video "Drama1" "drama" in
+  
+    let inter1 = make_interaction v1 true 5.0 in
+    let user = make_user_with_history "user" [ inter1 ] in
+  
+    (* v2 is drama, but user only watched action so should have 0 for drama *)
+    let videos = [ v2 ] in
+    let result = HybridRecommender.recommend_hybrid user videos [] in
+    
+    assert_bool "Should handle missing genre gracefully" (result <> None)
+
+(* test with single interaction (edge of ML threshold) *)
+let test_single_interaction_ml_threshold _ =
+  let v1 = make_video "Action1" "action" in
+  let v2 = make_video "Action2" "action" in
+
+  let inter1 = make_interaction v1 true 5.0 in
+  let user = make_user_with_history "single_inter" [ inter1 ] in
+  let videos = [ v2] in
+
+  let result = HybridRecommender.recommend_hybrid user videos [] in
+  assert_bool "handle single interaction case" (result <> None)
+
+(* test with exactly 2 interactions (ML threshold boundary) *)
+let test_two_interactions_ml_threshold _ =
+  let v1 = make_video "Action1" "action" in
+  let v2 = make_video "Action2" "action" in
+  let v3 = make_video "Action3" "action" in
+
+  let inter1 = make_interaction v1 true 5.0 in
+  let inter2 = make_interaction v2 true 6.0 in
+  let user = make_user_with_history "two_inter" [ inter1; inter2 ] in
+  let videos = [ v3 ] in
+
+  let result = HybridRecommender.recommend_hybrid user videos [] in
+  assert_bool "handle two interactions (ML threshold)" (result <> None)
+
+(* test with many interactions *)
+let test_many_interactions _ =
+  let videos_watched = 
+    List.init 10 (fun i -> make_video (Printf.sprintf "Video%d" i) "action")
+  in
+  let history = List.map (fun v -> make_interaction v true 5.0) videos_watched in
+  let user = make_user_with_history "power_user" history in
+  
+  let new_video = make_video "NewVideo" "action" in
+  let result = HybridRecommender.recommend_hybrid user [new_video] [] in
+  
+  assert_bool "handle many interactions" (result <> None)
+
+(* test different watchtime values *)
+let test_watchtime_variations _ =
+  let v1 = make_video "Short" "action" in
+  let v2 = make_video "Medium" "action" in
+  let v3 = make_video "Long" "action" in
+  let v4 = make_video "VeryLong" "action" in
+  let v_new = make_video "NewVideo" "action" in
+
+  let inter1 = make_interaction v1 true 0.5 in 
+  let inter2 = make_interaction v2 true 5.0 in
+  let inter3 = make_interaction v3 true 15.0 in 
+  let inter4 = make_interaction v4 true 100.0 in
+
+  let user = make_user_with_history "var_user" [ inter1; inter2; inter3; inter4 ] in
+  let result = HybridRecommender.recommend_hybrid user [v_new] [] in
+
+  assert_bool " handle watchtime variations" (result <> None)
+
+(* test liked vs not liked *)
+let test_liked_not_liked_mix _ =
+  let v1 = make_video "Liked1" "action" in
+  let v2 = make_video "NotLiked1" "action" in
+  let v3 = make_video "Liked2" "comedy" in
+  let v4 = make_video "NotLiked2" "comedy" in
+  let v_new = make_video "NewAction" "action" in
+
+  let inter1 = make_interaction v1 true 10.0 in
+  let inter2 = make_interaction v2 false 10.0 in
+  let inter3 = make_interaction v3 true 10.0 in
+  let inter4 = make_interaction v4 false 10.0 in
+
+  let user = make_user_with_history "mixed_likes" [ inter1; inter2; inter3; inter4 ] in
+  let result = HybridRecommender.recommend_hybrid user [v_new] [] in
+  assert_bool "handle mixed liked/not-liked" (result <> None)
+
 let tests =
   "recommender tests"
   >::: [
-         "recommend new user" >:: test_recommend_new_user;
-         "recommend content based" >:: test_recommend_content_based;
-         "recommend hybrid approach" >:: test_recommend_hybrid_approach;
-         "mixed signals" >:: test_mixed_signals;
-         "single video available" >:: test_single_video_available;
-         "genre preference" >:: test_genre_preference;
-         "empty video list" >:: test_empty_video_list;
-         "same genre multiple" >:: test_same_genre_multiple;
-         "progressive strategy" >:: test_progressive_strategy;
-         "filters watched videos" >:: test_filters_watched_videos;
-         "multiple genre balance" >:: test_multiple_genre_balance;
-       ]
+      "recommend new user" >:: test_recommend_new_user;
+      "recommend content based" >:: test_recommend_content_based;
+      "recommend hybrid approach" >:: test_recommend_hybrid_approach;
+      (*"all watched" >:: test_all_watched;**)
+      "mixed signals" >:: test_mixed_signals;
+      "single video available" >:: test_single_video_available;
+      "genre preference" >:: test_genre_preference;
+      "empty video list" >:: test_empty_video_list;
+      "same genre multiple" >:: test_same_genre_multiple;
+      "progressive strategy" >:: test_progressive_strategy;
+      "filters watched videos" >:: test_filters_watched_videos;
+      "hybrid with embeddings" >:: test_hybrid_with_embeddings;
+      "content score missing genre" >:: test_content_based_score_missing_genre;
+      "single interaction ML threshold" >:: test_single_interaction_ml_threshold;
+      "two interactions ML threshold" >:: test_two_interactions_ml_threshold;
+      "many interactions" >:: test_many_interactions;
+      "watchtime variations" >:: test_watchtime_variations;
+      "liked not liked mix" >:: test_liked_not_liked_mix;
+      "test multiple genre balance" >:: test_multiple_genre_balance;
+      ]
 
 let _ = run_test_tt_main tests

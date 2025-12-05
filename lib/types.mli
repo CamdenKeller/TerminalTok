@@ -42,7 +42,7 @@ type user = {
     - [name] is not empty.
     - [cnt_in] and [cnt_out] are open channels. *)
 type client = {
-  name : string; (** The client's username *)
+  cnt_name : string; (** The client's username *)
   mutable pub_key : string option; (** The client's public key for encryption *)
   cnt_addr : string; (** Address of the counting server connection *)
   cnt_in : Lwt_io.input_channel; (** Input channel for counting server *)

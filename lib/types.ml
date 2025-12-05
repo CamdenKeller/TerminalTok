@@ -35,12 +35,12 @@ type user = {
 (** Abstraction Function:
     A [client] represents a connected client in the chat system.
     Representation Invariant:
-    - [name] is not empty.
+    - [cnt_name] is not empty.
     - [cnt_in] and [cnt_out] are open channels. *)
 (* Limited version of user for chat usage *)
 type client = {
   (* id : string; *)
-  name : string;
+  cnt_name : string;
   mutable pub_key : string option;
   cnt_addr : string;
   cnt_in : Lwt_io.input_channel;

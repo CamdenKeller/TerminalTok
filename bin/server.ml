@@ -15,7 +15,7 @@ let string_of_addr = function
 (** [format_clients clients] returns the list of clients a string]*)
 let format_clients (clients : client list) =
   let string = ref "" in
-  List.iter (fun x -> string := !string ^ " " ^ x.name) (List.rev clients);
+  List.iter (fun x -> string := !string ^ " " ^ x.cnt_name) (List.rev clients);
   !string
 
 let run_counting_server sockadr () =
@@ -34,7 +34,7 @@ let run_counting_server sockadr () =
 
     let client =
       {
-        name;
+        cnt_name = name;
         pub_key = Some cl_pub_key;
         cnt_addr = address_string;
         cnt_in = client_in;
@@ -66,7 +66,7 @@ let run_counting_server sockadr () =
       (* Handle clients leaving *)
       let%lwt () = Lwt_io.close client_in in
       let%lwt () = Lwt_io.close client_out in
-      let new_clients = List.filter (fun x -> x.name <> name) !all_clients in
+      let new_clients = List.filter (fun x -> x.cnt_name <> name) !all_clients in
       all_clients := new_clients;
       Lwt_list.iter_p
         (fun client ->
@@ -100,7 +100,7 @@ let run_messaging_server sockadr () =
 
     let rec find_client_with_retry name retries =
       try
-        let client = List.find (fun c -> c.name = name) !all_clients in
+        let client = List.find (fun c -> c.cnt_name = name) !all_clients in
         Lwt.return client
       with Not_found ->
         if retries <= 0 then Lwt.fail Not_found
@@ -143,7 +143,7 @@ let run_messaging_server sockadr () =
           let%lwt () =
             Lwt_list.iter_p
               (fun client ->
-                if this_client.name = client.name then Lwt.return_unit
+                if this_client.cnt_name = client.cnt_name then Lwt.return_unit
                 else
                   match (client.msg_in, client.msg_out) with
                   | Some msg_in, Some msg_out ->
@@ -165,10 +165,10 @@ let run_messaging_server sockadr () =
         let%lwt removed_client =
           (* filter out this client from the all_clients list if it catches a
              break *)
-          Lwt.return (List.filter (fun x -> x.name = name) !all_clients)
+          Lwt.return (List.filter (fun x -> x.cnt_name = name) !all_clients)
         in
 
-        let new_clients = List.filter (fun x -> x.name <> name) !all_clients in
+        let new_clients = List.filter (fun x -> x.cnt_name <> name) !all_clients in
         all_clients := new_clients;
         Lwt.return_unit
     | _ ->

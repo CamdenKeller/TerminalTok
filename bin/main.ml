@@ -161,6 +161,10 @@ let run_online_session () =
     let video_data = Json_parser.parse_videos "data/videos.json" in
 
     let ascii_lst = Json_parser.parse_camels "data/ascii.json" in
+
+    let all_users = Recommender.CFRecommender.get_all_users () in
+    let world_embeddings = Recommender.CFRecommender.embed_user_list all_users in
+
     let video_index = ref 0 in
     let rec session_loop () =
       (* allows program to catch Cntrl C exit *)
@@ -172,7 +176,7 @@ let run_online_session () =
               let name, genre, file = List.nth video_data !video_index in
               Some { title = name; genre; ascii = file }
             else None
-          else Recommender.HybridRecommender.recommend_hybrid user ascii_lst
+          else Recommender.HybridRecommender.recommend_hybrid user ascii_lst world_embeddings
         in
 
         match video with

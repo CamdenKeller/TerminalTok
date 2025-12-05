@@ -24,3 +24,9 @@
  (libraries ounit2 terminal_tok zarith csv)
  (instrumentation (backend bisect_ppx)))
 
+(test
+ (name test_cf_recommender)
+ (modules test_cf_recommender)
+ (libraries ounit2 terminal_tok zarith csv)
+ (instrumentation (backend bisect_ppx)))
+

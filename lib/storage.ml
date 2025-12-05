@@ -6,13 +6,22 @@ let data_dir = "data/users"
 let get_user_dir name = Filename.concat data_dir name
 
 let init_storage () =
-  if not (Sys.file_exists "data") then Unix.mkdir "data" 0o755;
-  if not (Sys.file_exists data_dir) then Unix.mkdir data_dir 0o755
+  if not (Sys.file_exists "data") then
+    (try Unix.mkdir "data" 0o755 with
+    | Unix.Unix_error (Unix.EEXIST, _, _) -> ()
+    | e -> raise e);
+  if not (Sys.file_exists data_dir) then
+    (try Unix.mkdir data_dir 0o755 with
+    | Unix.Unix_error (Unix.EEXIST, _, _) -> ()
+    | e -> raise e)
 
 let save_user (u : user) =
   init_storage ();
   let user_dir = get_user_dir u.name in
-  if not (Sys.file_exists user_dir) then Unix.mkdir user_dir 0o755;
+  if not (Sys.file_exists user_dir) then
+    (try Unix.mkdir user_dir 0o755 with
+    | Unix.Unix_error (Unix.EEXIST, _, _) -> ()
+    | e -> raise e);
 
   (* Save history *)
   let history_file = Filename.concat user_dir "history.csv" in

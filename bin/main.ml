@@ -41,8 +41,8 @@ let run_offline_session () =
        DOWN ARROW (↓): Switch between standing position and sliding position\n\
        RIGHT ARROW (→): Front flip\n\
        LEFT ARROW (←): Backflip\n\
-       F: At some point, text will appear saying you can send an F16. \n\
-       Press F to send the F16 and drop a 67 bomb and temporarily destroy all \
+       F: At some point, text will appear saying you can send an F-16. \n\
+       Press F to send the F-16 and drop a 67 bomb and temporarily destroy all \
        obstacles in front of you.\n\
       \       \n\
       \       'q': Quit to Main Menu"

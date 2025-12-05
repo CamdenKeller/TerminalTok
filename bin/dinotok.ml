@@ -99,7 +99,7 @@ let f16_string () =
   ^
   if f16.send then "\n" ^ f16_frame f16.pos
   else
-    (if f16.charge > 300 then "Press F to send an F16" else "")
+    (if f16.charge > 300 then "Press F to send an F-16" else "")
     ^ String.make 7 '\n'
 
 let score = ref 0
@@ -405,8 +405,7 @@ let output line pos =
   let third_line = if pos = pos3 || pos = pos7 || pos = slide then 1 else 0 in
   let no_high = search 9 2 = None in
   (* no high obstacles *)
-  String.make 20 '\n' ^ "Score: " ^ string_of_int !score
- ^ f16_string ()
+  String.make 20 '\n' ^ "Score: " ^ string_of_int !score ^ f16_string ()
   ^
   if f16.pos >= drop && f16.pos < drop + 18 then bomb_string line pos (* bomb *)
   else if f16.pos >= drop + 18 && f16.pos < 40 then explosion line pos

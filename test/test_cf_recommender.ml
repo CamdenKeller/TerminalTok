@@ -147,39 +147,6 @@ let test_embed_user_list _ =
     assert_bool "Should contain bob" (List.mem "bob" embedded_names)
   )
 
-  let test_recommend_cf _ =
-  with_scenario_users (fun base_dir ->
-    (* 1. Construct the Target User (In Memory Only) *)
-    (* Target has ONLY seen "Shared Video" *)
-    let shared_video = { 
-      Types.title = "Shared Video"; 
-      ascii = ""; 
-      genre = "action" 
-    } in
-    let target_interaction = { 
-      Types.video = shared_video; 
-      watchtime = 20.0; 
-      liked = true 
-    } in
-    let target_user = { 
-      Types.name = "Target User"; 
-      vid_history = [target_interaction]; 
-      genre_counts = Hashtbl.create 1 
-    } in
-
-    (* 2. Call recommend_cf *)
-    (* NOTE: Ensure your recommend_cf accepts ?users_dir! *)
-    let result = Recommender.CFRecommender.recommend_cf ~users_dir:base_dir target_user 5 in
-
-    (* 3. Assertions *)
-    match result with
-    | Some video -> 
-        assert_equal "Hidden Gem" video.title 
-          ~msg:"Should recommend the video the neighbor watched but target hasn't"
-    | None -> 
-        assert_failure "CF failed to recommend a video despite high similarity!"
-  )
-
 let test_get_cf_scores_deterministic _ =
   (* 1. Setup Data: Create two users with identical taste *)
   (* Helper to make video objects quickly *)
@@ -232,7 +199,6 @@ let test_get_cf_scores_deterministic _ =
 let suite = "CFRecommender tests" >::: [
   "get_all_users" >:: test_get_all_users;
   "embed_user_list" >:: test_embed_user_list;
-  "recommend_cf" >:: test_recommend_cf;
   "get_cf_scores_deterministic" >:: test_get_cf_scores_deterministic;
 ]
 

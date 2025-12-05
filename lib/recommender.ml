@@ -225,7 +225,6 @@ module MLRecommender = struct
 end
 
 module CFRecommender = struct
-  (* Get all users from a directory and return them as a list *)
 
   (** [get_all_users ?users_dir ()] returns a list of all users by reading the
       user directories in [users_dir] (default: "data/users") and loading their
@@ -308,7 +307,6 @@ module CFRecommender = struct
     with Sys_error _ -> []
 
   (* embed all users using previous function return list (user * embedding) *)
-
   let embed_user_list user_list =
     let embeddings = MLRecommender.init_embeddings () in
 
@@ -330,9 +328,6 @@ module CFRecommender = struct
     assert (Array.length emb1 = Array.length emb2);
 
     let dot = MLRecommender.dot_product emb1 emb2 in
-
-    (* Maybe refactor this to helper at some point, probably when move
-       dot_product *)
     let mag1 = ref 0.0 in
     for i = 0 to Array.length emb1 - 1 do
       mag1 := !mag1 +. (emb1.(i) *. emb1.(i))
@@ -529,7 +524,6 @@ module CFRecommender = struct
 
     check_len && has_score_9 && has_score_5
 
-  (* we account for their basically being none? *)
   (* HELPER to calculate score from list of ( interactions) *)
   let calculate_video_score (interactions : (float * interaction) list) : float
       =
@@ -590,44 +584,6 @@ module CFRecommender = struct
       abs_float (high_score -. 1.0) < 0.01 && abs_float low_score < 0.01
     with Not_found -> false
 
-  (* Get top k videos from collaborative filtering *)
-  let recommend_cf ?(users_dir = "data/users") (target_user : user)
-      (k_neighbors : int) : video option =
-    let all_users = get_all_users ~users_dir () in
-    let all_users_with_target =
-      if List.exists (fun u -> u.name = target_user.name) all_users then
-        all_users
-      else target_user :: all_users
-    in
-    let user_embeddings = embed_user_list all_users_with_target in
-
-    match
-      List.find_opt (fun (u, _) -> u.name = target_user.name) user_embeddings
-    with
-    | None -> None
-    | Some (_, target_emb) -> (
-        let closeness_list =
-          user_closeness_list target_user.name target_emb user_embeddings
-        in
-        let top_neighbors = get_top_k_users closeness_list k_neighbors in
-        let video_table =
-          get_all_videos_from_users top_neighbors target_user.vid_history
-        in
-        let unsorted_scored_videos = score_videos video_table in
-
-        let final_ranking =
-          List.sort
-            (fun (_, s1) (_, s2) -> compare s2 s1)
-            unsorted_scored_videos
-        in
-
-        match final_ranking with
-        | [] -> None
-        | (best_video, score) :: _ ->
-            Printf.printf "[CF Confidence: %.2f] Recommended: %s\n" score
-              best_video.title;
-            Some best_video)
-
   let get_cf_scores_for_target (target_user : user)
       (system_embeddings : (user * float array) list) (k : int) :
       (video * float) list =
@@ -665,7 +621,7 @@ module HybridRecommender = struct
       genre_count /. float_of_int (max 1 (List.length user.vid_history))
     with Not_found -> 0.0
 
-  (* Collaborative filtering via ML *)
+  (* Collaborative filtering via ML, with ML module *)
   let collaborative_score (embeddings : MLRecommender.embeddings) (user : user)
       (video : video) : float =
     if List.length user.vid_history < 2 then 0.0

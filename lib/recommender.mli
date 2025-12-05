@@ -17,7 +17,9 @@ module MLRecommender : sig
       learned [embeddings]. *)
   val predict_score : embeddings -> string -> string -> float
 
-  (* write spec, also probably refactor this code to general reccomender helper module at some point *)
+  (** [dot_product v1 v2] calculates the scalar dot product of two vectors [v1]
+      and [v2].
+      Requires: [v1] and [v2] must have the same length. *)
   val dot_product : float array -> float array -> float
 
   (** [recommend_ml embeddings user videos] recommends a video for the [user]
@@ -29,17 +31,21 @@ end
 (* ===== Collaborative Filtering Recommender ===== *)
 module CFRecommender : sig
 
-  (* change to a better name *)
-  (** [get_all_users ()] returns a list of all users by reading user 
-      directories and loading their history and stats. *)
+  (** [get_all_users ?users_dir ()] returns a list of all users by reading user
+      directories and loading their history and stats. 
+      Optional [users_dir] defaults to "data/users". *)
   val get_all_users : ?users_dir:string -> unit -> user list
 
-  (* add real specification *)
+  (** [embed_user_list users] initializes a new ML model, trains it on the 
+      history of every user in the [users] list, and returns an association 
+      list mapping each user to their learned latent embedding vector. *)
   val embed_user_list : user list -> (user * float array) list
 
-  (* this one too *)
-  val recommend_cf : ?users_dir:string -> user -> int -> video option
-
+  (** [get_cf_scores_for_target user system_embeddings k] computes recommendation
+      scores for a [user] by finding their [k] nearest neighbors within the 
+      [system_embeddings]. It returns a list of videos watched by those neighbors 
+      (excluding videos the target [user] has already seen), weighted by the 
+      similarity to the neighbors. *)
   val get_cf_scores_for_target : user -> (user * float array) list -> int -> (video * float) list
 end
 

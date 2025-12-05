@@ -34,13 +34,17 @@ let run_offline_session () =
       "\n\
        === Offline Mode: DinoTok ===\n\
        Press ENTER to start the game.\n\
-       Jump over the 67s and try to get the highest score you can!\n\
+       Jump over the 67s and try to get the highest score you can! \n\
+       The game will switch between day and night mode at intervals of 500 \
+       points.\n\
        UP ARROW (↑) or ENTER: Jump\n\
        DOWN ARROW (↓): Switch between standing position and sliding position\n\
        RIGHT ARROW (→): Front flip\n\
        LEFT ARROW (←): Backflip\n\
-       F: At some point, text will appear saying you can send an F16. Press F \
-       to send the F16 and drop a 67 bomb.\n\
+       F: At some point, text will appear saying you can send an F16. \n\
+       Press F to send the F16 and drop a 67 bomb and temporarily destroy all \
+       obstacles in front of you.\n\
+      \       \n\
       \       'q': Quit to Main Menu"
   in
   let%lwt _ = Lwt_io.read_line Lwt_io.stdin in
@@ -163,7 +167,9 @@ let run_online_session () =
     let ascii_lst = Json_parser.parse_camels "data/ascii.json" in
 
     let all_users = Recommender.CFRecommender.get_all_users () in
-    let world_embeddings = Recommender.CFRecommender.embed_user_list all_users in
+    let world_embeddings =
+      Recommender.CFRecommender.embed_user_list all_users
+    in
 
     let video_index = ref 0 in
     let rec session_loop () =
@@ -176,7 +182,9 @@ let run_online_session () =
               let name, genre, file = List.nth video_data !video_index in
               Some { title = name; genre; ascii = file }
             else None
-          else Recommender.HybridRecommender.recommend_hybrid user ascii_lst world_embeddings
+          else
+            Recommender.HybridRecommender.recommend_hybrid user ascii_lst
+              world_embeddings
         in
 
         match video with

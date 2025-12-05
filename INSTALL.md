@@ -60,3 +60,8 @@ To run the test suite:
 ```bash
 dune test
 ```
+
+To run tests with coverage reporting:
+```bash
+dune runtest --instrument-with bisect_ppx --force && bisect-ppx-report summary && bisect-ppx-report html
+```

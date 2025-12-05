@@ -341,6 +341,8 @@ module CFRecommender = struct
     let mag2 = sqrt !mag2 in
 
     if mag1 = 0.0 || mag2 = 0.0 then 0.0 else dot /. (mag1 *. mag2)
+  
+  [@@@coverage off]
 
   (* Case 1: Identical vectors should have similarity 1.0 *)
   let%test "test_cosine_identity" = (
@@ -360,7 +362,9 @@ module CFRecommender = struct
     let v1 = [| 1.0; 1.0 |] in
     let v2 = [| 10.0; 10.0 |] in
     (* Magnitude is different, but direction is the same! *)
-    abs_float (cosine_similarity v1 v2 -. 1.0) < 0.0001 ) [@coverage off]
+    abs_float (cosine_similarity v1 v2 -. 1.0) < 0.0001)
+  
+  [@@@coverage on]
 
   (* compare selected user to every other distinct user return list of users and
      closeness score *)
@@ -373,8 +377,9 @@ module CFRecommender = struct
     (* 2. Map the remaining users to (user, score) *)
     |> List.map (fun (user, embed) -> (user, user_cosine_similarity embed))
 
+  [@@@coverage off]
   (* TEST: User Closeness List *)
-  let%test "test_user_closeness_list_basic" = (
+  let%test "test_user_closeness_list_basic" = 
     (* 1. Setup: Create dummy users *)
     let make_dummy name =
       { name; vid_history = []; genre_counts = Hashtbl.create 1 }
@@ -397,8 +402,9 @@ module CFRecommender = struct
         in
         let check_b = u2.name = "User B" && abs_float score2 < 0.0001 in
         check_a && check_b
-    | _ -> false ) [@coverage off]
-
+    | _ -> false
+  
+  [@@@coverage on]
   (* get top k users *)
   let get_top_k_users (closeness_list : (user * float) list) (k : int) :
       (user * float) list =
@@ -414,7 +420,8 @@ module CFRecommender = struct
     in
     take k sorted_list
 
-  let%test "test_get_top_k" = (
+  [@@@coverage off]
+  let%test "test_get_top_k" =
     let make_dummy name =
       { name; vid_history = []; genre_counts = Hashtbl.create 1 }
     in
@@ -430,8 +437,8 @@ module CFRecommender = struct
         in
         let check_2 = u2.name = "Mid Match" && abs_float (s2 -. 0.5) < 0.0001 in
         check_1 && check_2
-    | _ -> false ) [@coverage off]
-
+    | _ -> false
+  [@@@coverage on]
   (* HELPER check if video already watched by selected user *)
   let filter_out_seen (candidates : interaction list)
       (seen_history : interaction list) : interaction list =
@@ -443,8 +450,10 @@ module CFRecommender = struct
              seen_history))
       candidates
 
+
+  [@@@coverage off] 
   (* TEST: Filter Seen Videos - No duplicates allowed on this ship! *)
-  let%test "test_filter_seen" = (
+  let%test "test_filter_seen" = 
     let make_inter title =
       let v = { title; ascii = ""; genre = "Action" } in
       { video = v; watchtime = 10.0; liked = true }
@@ -458,8 +467,9 @@ module CFRecommender = struct
     let result = filter_out_seen candidates history in
     match result with
     | [ res ] -> res.video.title = "Video B"
-    | _ -> false ) [@coverage off]
-
+    | _ -> false
+  
+  [@@@coverage on]
   (* HELPER get all videos (use helper above) from list of users. returns Hash
      table key video - list (closeness score * ineraction) *)
   let get_all_videos_from_users (similar_users : (user * float) list)
@@ -482,7 +492,8 @@ module CFRecommender = struct
       similar_users;
     video_table
 
-  let%test "test_aggregate_videos" = (
+  [@@@coverage off]  
+  let%test "test_aggregate_videos" =
     let vid_x = { title = "Video X"; ascii = ""; genre = "Comedy" } in
     let vid_y = { title = "Video Y"; ascii = ""; genre = "Action" } in
 
@@ -522,8 +533,9 @@ module CFRecommender = struct
       List.exists (fun (s, _) -> abs_float (s -. 0.5) < 0.0001) list_x
     in
 
-    check_len && has_score_9 && has_score_5 ) [@coverage off]
-
+    check_len && has_score_9 && has_score_5
+  [@@@coverage on]
+  
   (* HELPER to calculate score from list of ( interactions) *)
   let calculate_video_score (interactions : (float * interaction) list) : float
       =
@@ -534,7 +546,8 @@ module CFRecommender = struct
         acc +. weighted_score)
       0.0 interactions
 
-  let%test "test_calculate_score" = (
+  [@@@coverage off]    
+  let%test "test_calculate_score" =
     let inter_a =
       {
         video = { title = "Vid"; ascii = ""; genre = "" };
@@ -553,8 +566,10 @@ module CFRecommender = struct
     let input_list = [ (1.0, inter_a); (0.5, inter_b) ] in
 
     let total_score = calculate_video_score input_list in
-    abs_float (total_score -. 1.0) < 0.01 ) [@coverage off]
+    abs_float (total_score -. 1.0) < 0.01
 
+  [@@@coverage on]
+  
   (* HELPER go through hash table calculate list of tuples (video * score) *)
   let score_videos (video_table : (video, (float * interaction) list) Hashtbl.t)
       : (video * float) list =
@@ -563,8 +578,8 @@ module CFRecommender = struct
         let total_score = calculate_video_score interactions in
         (video, total_score) :: acc)
       video_table []
-
-  let%test "test_score_videos_basic" = (
+  [@@@coverage off]
+  let%test "test_score_videos_basic" =
     let table = Hashtbl.create 5 in
     let vid_high =
       { title = "High Score Video"; ascii = ""; genre = "Genre A" }
@@ -582,7 +597,7 @@ module CFRecommender = struct
       let high_score = List.assoc vid_high results in
       let low_score = List.assoc vid_low results in
       abs_float (high_score -. 1.0) < 0.01 && abs_float low_score < 0.01
-    with Not_found -> false ) [@coverage off]
+    with Not_found -> false
 
   let get_cf_scores_for_target (target_user : user)
       (system_embeddings : (user * float array) list) (k : int) :

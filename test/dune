@@ -30,3 +30,9 @@
  (libraries ounit2 terminal_tok zarith csv)
 )
 
+(test
+ (name test_ml_recommender)
+ (modules test_ml_recommender)
+ (libraries ounit2 terminal_tok zarith csv)
+)
+

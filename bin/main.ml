@@ -187,9 +187,25 @@ let run_online_session () =
               world_embeddings
         in
 
-        match video with
+        let video_to_play =
+          match video with
+          | Some v -> Some v
+          | None ->
+              if video_mode then
+                if List.length video_data > 0 then
+                  let name, genre, file =
+                    List.nth video_data (Random.int (List.length video_data))
+                  in
+                  Some { title = name; genre; ascii = file }
+                else None
+              else if List.length ascii_lst > 0 then
+                Some (List.nth ascii_lst (Random.int (List.length ascii_lst)))
+              else None
+        in
+
+        match video_to_play with
         | None ->
-            let%lwt () = Lwt_io.printl "No videos; returning to menu" in
+            let%lwt () = Lwt_io.printl "No videos found; returning to menu" in
             Lwt.return_unit
         | Some v ->
             let watch = { video = v; liked = false; watchtime = 0.0 } in

@@ -163,6 +163,64 @@ module MLRecommender = struct
           Printf.printf "[ML Confidence: %.2f]\n" score;
           Some best_video
     end
+
+  (* ===== Inline Tests ===== *)
+  [@@@coverage off]
+
+  let%test "test_init_embeddings" =
+    let emb = init_embeddings () in
+    emb.learning_rate = 0.01 && emb.lambda = 0.01
+    && Hashtbl.length emb.user_embeddings = 0
+    && Hashtbl.length emb.video_embeddings = 0
+
+  let%test "test_get_user_embedding" =
+    let emb = init_embeddings () in
+    let user_vec = get_user_embedding emb "user1" in
+    let len_ok = Array.length user_vec = 5 in
+    let user_vec2 = get_user_embedding emb "user1" in
+    len_ok && user_vec = user_vec2
+
+  let%test "test_get_video_embedding" =
+    let emb = init_embeddings () in
+    let vid_vec = get_video_embedding emb "video1" in
+    let len_ok = Array.length vid_vec = 5 in
+    let vid_vec2 = get_video_embedding emb "video1" in
+    len_ok && vid_vec = vid_vec2
+
+  let%test "test_dot_product" =
+    let v1 = [| 1.0; 2.0; 3.0; 4.0; 5.0 |] in
+    let v2 = [| 0.5; 0.5; 0.5; 0.5; 0.5 |] in
+    let result = dot_product v1 v2 in
+    abs_float (result -. 7.5) < 0.0001
+
+  let%test "test_interaction_to_score" =
+    let v = { title = "v"; ascii = ""; genre = "test" } in
+    let i1 = { video = v; liked = true; watchtime = 0.0 } in
+    let s1 = interaction_to_score i1 in
+    let check1 = abs_float (s1 -. 0.6) < 0.0001 in
+    let i2 = { video = v; liked = false; watchtime = 0.0 } in
+    let s2 = interaction_to_score i2 in
+    let check2 = abs_float s2 < 0.0001 in
+    check1 && check2
+
+  let%test "test_train_step" =
+    let emb = init_embeddings () in
+    let user = "u1" in
+    let vid = { title = "v1"; ascii = ""; genre = "test" } in
+    let inter = { video = vid; liked = true; watchtime = 10.0 } in
+    let u_vec_orig = Array.copy (get_user_embedding emb user) in
+    let v_vec_orig = Array.copy (get_video_embedding emb vid.title) in
+    train_step emb user inter;
+    let u_vec_new = get_user_embedding emb user in
+    let v_vec_new = get_video_embedding emb vid.title in
+    u_vec_orig <> u_vec_new && v_vec_orig <> v_vec_new
+
+  let%test "test_predict_score" =
+    let emb = init_embeddings () in
+    let score = predict_score emb "u1" "v1" in
+    score >= 0.0 && score <= 1.0
+
+  [@@@coverage on]
 end
 
 module CFRecommender = struct

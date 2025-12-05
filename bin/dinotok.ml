@@ -406,7 +406,7 @@ let output line pos =
   let no_high = search 9 2 = None in
   (* no high obstacles *)
   String.make 20 '\n' ^ "Score: " ^ string_of_int !score
-  ^ "\t\t\t High Score: 0" ^ f16_string ()
+ ^ f16_string ()
   ^
   if f16.pos >= drop && f16.pos < drop + 18 then bomb_string line pos (* bomb *)
   else if f16.pos >= drop + 18 && f16.pos < 40 then explosion line pos

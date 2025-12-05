@@ -11,7 +11,7 @@ module MLRecommender : sig
   (** [get_user_embedding embeddings user_name] gets or creates an embedding
       vector for the given user. *)
   val get_user_embedding : embeddings -> string -> float array
-
+  
   (** [predict_score embeddings user_name video_title] predicts the relevance
       score (0.0 to 1.0) for a given [user_name] and [video_title] based on the
       learned [embeddings]. *)

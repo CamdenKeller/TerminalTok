@@ -2,7 +2,7 @@
   "videos": [
     {
       "name": "Nature",
-      "genre": "Unknown",
+      "genre": "Nature",
       "file": "videos/311442_tiny.mp4",
       "length": 50,
       "description": "A peaceful outdoor scene showcasing natural scenery and quiet landscapes.",
@@ -16,7 +16,7 @@
     },
     {
       "name": "Band",
-      "genre": "Unknown",
+      "genre": "Urban",
       "file": "videos/13107446_3840_2160_24fps.mp4",
       "length": 10,
       "description": "A lively group of musicians performing together on stage or in rehearsal.",
@@ -30,7 +30,7 @@
     },
     {
       "name": "Fishing",
-      "genre": "Unknown",
+      "genre": "Relaxation",
       "file": "videos/14695650_3840_2160_30fps.mp4",
       "length": 9,
       "description": "A relaxing fishing scene featuring a person catching or preparing to cast a line.",
@@ -44,7 +44,7 @@
     },
     {
       "name": "Butterfly",
-      "genre": "Unknown",
+      "genre": "Animals",
       "file": "videos/14706394_2160_3840_24fps.mp4",
       "length": 26,
       "description": "Close-up footage of a butterfly showing delicate wings and natural beauty.",
@@ -58,7 +58,7 @@
     },
     {
       "name": "Breakfast",
-      "genre": "Unknown",
+      "genre": "Urban",
       "file": "videos/6866463-hd_1080_1920_30fps.mp4",
       "length": 15,
       "description": "A cozy breakfast scene showing food preparation or an inviting meal setup.",
@@ -72,7 +72,7 @@
     },
     {
       "name": "Cows",
-      "genre": "Unknown",
+      "genre": "Animals",
       "file": "videos/COWS_AT_THE_GRASS.mp4",
       "length": 15,
       "description": "Cows grazing peacefully in open grass fields under a calm outdoor setting.",
@@ -82,6 +82,210 @@
         "#animals",
         "#rural",
         "#grasslands"
+      ]
+    },
+    {
+      "name": "City Traffic",
+      "genre": "Urban",
+      "file": "videos/12414318_1920_1080_30fps.mp4",
+      "length": 15,
+      "description": "Urban street view with moving cars.",
+      "hashtags": [
+        "#city",
+        "#traffic",
+        "#urban"
+      ]
+    },
+    {
+      "name": "Forest Walk",
+      "genre": "Nature",
+      "file": "videos/13612905_2160_3840_60fps.mp4",
+      "length": 15,
+      "description": "Walking through a dense green forest.",
+      "hashtags": [
+        "#forest",
+        "#nature",
+        "#walk"
+      ]
+    },
+    {
+      "name": "Mountain View",
+      "genre": "Nature",
+      "file": "videos/14646171_1920_1080_25fps.mp4",
+      "length": 15,
+      "description": "Scenic view of snowy mountains.",
+      "hashtags": [
+        "#mountain",
+        "#snow",
+        "#view"
+      ]
+    },
+    {
+      "name": "Sunset",
+      "genre": "Relaxation",
+      "file": "videos/14662146_1920_1080_24fps.mp4",
+      "length": 15,
+      "description": "Beautiful sunset over the horizon.",
+      "hashtags": [
+        "#sunset",
+        "#sky",
+        "#evening"
+      ]
+    },
+    {
+      "name": "River Flow",
+      "genre": "Relaxation",
+      "file": "videos/14729980_3840_2160_30fps.mp4",
+      "length": 15,
+      "description": "Water flowing in a quiet river.",
+      "hashtags": [
+        "#river",
+        "#water",
+        "#nature"
+      ]
+    },
+    {
+      "name": "Raindrops",
+      "genre": "Relaxation",
+      "file": "videos/14730409_3840_2160_30fps.mp4",
+      "length": 15,
+      "description": "Rain falling on a window pane.",
+      "hashtags": [
+        "#rain",
+        "#weather",
+        "#mood"
+      ]
+    },
+    {
+      "name": "Night City",
+      "genre": "Urban",
+      "file": "videos/14765749_1080_1920_60fps.mp4",
+      "length": 15,
+      "description": "City lights glowing at night.",
+      "hashtags": [
+        "#city",
+        "#night",
+        "#lights"
+      ]
+    },
+    {
+      "name": "Clouds",
+      "genre": "Relaxation",
+      "file": "videos/14781159_1080_1920_25fps.mp4",
+      "length": 15,
+      "description": "Time lapse of moving clouds.",
+      "hashtags": [
+        "#clouds",
+        "#sky",
+        "#timelapse"
+      ]
+    },
+    {
+      "name": "Bonfire",
+      "genre": "Relaxation",
+      "file": "videos/14790533_1080_1920_30fps.mp4",
+      "length": 15,
+      "description": "Warm bonfire burning in the dark.",
+      "hashtags": [
+        "#fire",
+        "#camping",
+        "#night"
+      ]
+    },
+    {
+      "name": "Waterfall",
+      "genre": "Nature",
+      "file": "videos/14819790_1920_1080_30fps.mp4",
+      "length": 15,
+      "description": "Majestic waterfall cascading down.",
+      "hashtags": [
+        "#waterfall",
+        "#nature",
+        "#power"
+      ]
+    },
+    {
+      "name": "Desert",
+      "genre": "Nature",
+      "file": "videos/14839373_2160_3840_30fps.mp4",
+      "length": 15,
+      "description": "Vast desert dunes under the sun.",
+      "hashtags": [
+        "#desert",
+        "#sand",
+        "#hot"
+      ]
+    },
+    {
+      "name": "Coffee",
+      "genre": "Relaxation",
+      "file": "videos/18775889-uhd_3840_2160_25fps.mp4",
+      "length": 15,
+      "description": "Pouring fresh coffee into a cup.",
+      "hashtags": [
+        "#coffee",
+        "#morning",
+        "#drink"
+      ]
+    },
+    {
+      "name": "Coding",
+      "genre": "Urban",
+      "file": "videos/19321127-uhd_3840_2160_24fps.mp4",
+      "length": 15,
+      "description": "Hands typing on a mechanical keyboard.",
+      "hashtags": [
+        "#coding",
+        "#tech",
+        "#work"
+      ]
+    },
+    {
+      "name": "Flowers",
+      "genre": "Nature",
+      "file": "videos/308073_tiny (1).mp4",
+      "length": 15,
+      "description": "Blooming flowers in a garden.",
+      "hashtags": [
+        "#flowers",
+        "#garden",
+        "#spring"
+      ]
+    },
+    {
+      "name": "Dog",
+      "genre": "Animals",
+      "file": "videos/4125042-uhd_3840_2160_24fps.mp4",
+      "length": 15,
+      "description": "Happy dog running in the park.",
+      "hashtags": [
+        "#dog",
+        "#pet",
+        "#cute"
+      ]
+    },
+    {
+      "name": "Cat",
+      "genre": "Animals",
+      "file": "videos/5743314-uhd_3840_2160_30fps.mp4",
+      "length": 15,
+      "description": "Curious cat looking at the camera.",
+      "hashtags": [
+        "#cat",
+        "#pet",
+        "#meow"
+      ]
+    },
+    {
+      "name": "Fireworks",
+      "genre": "Urban",
+      "file": "videos/7876296-uhd_2160_4096_25fps.mp4",
+      "length": 15,
+      "description": "Colorful fireworks lighting up the sky.",
+      "hashtags": [
+        "#fireworks",
+        "#celebration",
+        "#night"
       ]
     }
   ]

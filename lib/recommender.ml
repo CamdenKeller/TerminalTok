@@ -166,35 +166,35 @@ module MLRecommender = struct
     end
 
   (* ===== Inline Tests ===== *)
-  [@@@coverage off]
 
-  let%test "test_init_embeddings" =
+
+  let%test "test_init_embeddings" = (
     let emb = init_embeddings () in
     emb.learning_rate = 0.01 && emb.lambda = 0.01
     && Hashtbl.length emb.user_embeddings = 0
-    && Hashtbl.length emb.video_embeddings = 0
+    && Hashtbl.length emb.video_embeddings = 0 ) [@coverage off]
 
-  let%test "test_get_user_embedding" =
+  let%test "test_get_user_embedding" = (
     let emb = init_embeddings () in
     let user_vec = get_user_embedding emb "user1" in
     let len_ok = Array.length user_vec = 5 in
     let user_vec2 = get_user_embedding emb "user1" in
-    len_ok && user_vec = user_vec2
+    len_ok && user_vec = user_vec2 ) [@coverage off]
 
-  let%test "test_get_video_embedding" =
+  let%test "test_get_video_embedding" = (
     let emb = init_embeddings () in
     let vid_vec = get_video_embedding emb "video1" in
     let len_ok = Array.length vid_vec = 5 in
     let vid_vec2 = get_video_embedding emb "video1" in
-    len_ok && vid_vec = vid_vec2
+    len_ok && vid_vec = vid_vec2 ) [@coverage off]
 
-  let%test "test_dot_product" =
+  let%test "test_dot_product" = (
     let v1 = [| 1.0; 2.0; 3.0; 4.0; 5.0 |] in
     let v2 = [| 0.5; 0.5; 0.5; 0.5; 0.5 |] in
     let result = dot_product v1 v2 in
-    abs_float (result -. 7.5) < 0.0001
+    abs_float (result -. 7.5) < 0.0001 ) [@coverage off]
 
-  let%test "test_interaction_to_score" =
+  let%test "test_interaction_to_score" = (
     let v = { title = "v"; ascii = ""; genre = "test" } in
     let i1 = { video = v; liked = true; watchtime = 0.0 } in
     let s1 = interaction_to_score i1 in
@@ -202,9 +202,9 @@ module MLRecommender = struct
     let i2 = { video = v; liked = false; watchtime = 0.0 } in
     let s2 = interaction_to_score i2 in
     let check2 = abs_float s2 < 0.0001 in
-    check1 && check2
+    check1 && check2 ) [@coverage off]
 
-  let%test "test_train_step" =
+  let%test "test_train_step" = (
     let emb = init_embeddings () in
     let user = "u1" in
     let vid = { title = "v1"; ascii = ""; genre = "test" } in
@@ -214,14 +214,14 @@ module MLRecommender = struct
     train_step emb user inter;
     let u_vec_new = get_user_embedding emb user in
     let v_vec_new = get_video_embedding emb vid.title in
-    u_vec_orig <> u_vec_new && v_vec_orig <> v_vec_new
+    u_vec_orig <> u_vec_new && v_vec_orig <> v_vec_new ) [@coverage off]
 
-  let%test "test_predict_score" =
+  let%test "test_predict_score" = (
     let emb = init_embeddings () in
     let score = predict_score emb "u1" "v1" in
-    score >= 0.0 && score <= 1.0
+    score >= 0.0 && score <= 1.0 ) [@coverage off]
 
-  [@@@coverage on]
+
 end
 
 module CFRecommender = struct
@@ -343,24 +343,24 @@ module CFRecommender = struct
     if mag1 = 0.0 || mag2 = 0.0 then 0.0 else dot /. (mag1 *. mag2)
 
   (* Case 1: Identical vectors should have similarity 1.0 *)
-  let%test "test_cosine_identity" =
+  let%test "test_cosine_identity" = (
     let v1 = [| 3.0; 4.0; 5.0 |] in
     (* Similarity with self is always 1.0 *)
-    abs_float (cosine_similarity v1 v1 -. 1.0) < 0.0001
+    abs_float (cosine_similarity v1 v1 -. 1.0) < 0.0001 ) [@coverage off]
 
   (* Case 2: Orthogonal vectors (90 degrees) should have similarity 0.0 *)
-  let%test "test_cosine_orthogonal" =
+  let%test "test_cosine_orthogonal" = (
     let v1 = [| 1.0; 0.0; 0.0 |] in
     let v2 = [| 0.0; 1.0; 0.0 |] in
     (* These are completely unrelated directions *)
-    abs_float (cosine_similarity v1 v2) < 0.0001
+    abs_float (cosine_similarity v1 v2) < 0.0001 ) [@coverage off]
 
   (* Case 3: Scaled vectors should still have similarity 1.0 *)
-  let%test "test_cosine_scaled" =
+  let%test "test_cosine_scaled" = (
     let v1 = [| 1.0; 1.0 |] in
     let v2 = [| 10.0; 10.0 |] in
     (* Magnitude is different, but direction is the same! *)
-    abs_float (cosine_similarity v1 v2 -. 1.0) < 0.0001
+    abs_float (cosine_similarity v1 v2 -. 1.0) < 0.0001 ) [@coverage off]
 
   (* compare selected user to every other distinct user return list of users and
      closeness score *)
@@ -374,7 +374,7 @@ module CFRecommender = struct
     |> List.map (fun (user, embed) -> (user, user_cosine_similarity embed))
 
   (* TEST: User Closeness List *)
-  let%test "test_user_closeness_list_basic" =
+  let%test "test_user_closeness_list_basic" = (
     (* 1. Setup: Create dummy users *)
     let make_dummy name =
       { name; vid_history = []; genre_counts = Hashtbl.create 1 }
@@ -397,7 +397,7 @@ module CFRecommender = struct
         in
         let check_b = u2.name = "User B" && abs_float score2 < 0.0001 in
         check_a && check_b
-    | _ -> false
+    | _ -> false ) [@coverage off]
 
   (* get top k users *)
   let get_top_k_users (closeness_list : (user * float) list) (k : int) :
@@ -414,7 +414,7 @@ module CFRecommender = struct
     in
     take k sorted_list
 
-  let%test "test_get_top_k" =
+  let%test "test_get_top_k" = (
     let make_dummy name =
       { name; vid_history = []; genre_counts = Hashtbl.create 1 }
     in
@@ -430,7 +430,7 @@ module CFRecommender = struct
         in
         let check_2 = u2.name = "Mid Match" && abs_float (s2 -. 0.5) < 0.0001 in
         check_1 && check_2
-    | _ -> false
+    | _ -> false ) [@coverage off]
 
   (* HELPER check if video already watched by selected user *)
   let filter_out_seen (candidates : interaction list)
@@ -444,7 +444,7 @@ module CFRecommender = struct
       candidates
 
   (* TEST: Filter Seen Videos - No duplicates allowed on this ship! *)
-  let%test "test_filter_seen" =
+  let%test "test_filter_seen" = (
     let make_inter title =
       let v = { title; ascii = ""; genre = "Action" } in
       { video = v; watchtime = 10.0; liked = true }
@@ -458,7 +458,7 @@ module CFRecommender = struct
     let result = filter_out_seen candidates history in
     match result with
     | [ res ] -> res.video.title = "Video B"
-    | _ -> false
+    | _ -> false ) [@coverage off]
 
   (* HELPER get all videos (use helper above) from list of users. returns Hash
      table key video - list (closeness score * ineraction) *)
@@ -482,7 +482,7 @@ module CFRecommender = struct
       similar_users;
     video_table
 
-  let%test "test_aggregate_videos" =
+  let%test "test_aggregate_videos" = (
     let vid_x = { title = "Video X"; ascii = ""; genre = "Comedy" } in
     let vid_y = { title = "Video Y"; ascii = ""; genre = "Action" } in
 
@@ -522,7 +522,7 @@ module CFRecommender = struct
       List.exists (fun (s, _) -> abs_float (s -. 0.5) < 0.0001) list_x
     in
 
-    check_len && has_score_9 && has_score_5
+    check_len && has_score_9 && has_score_5 ) [@coverage off]
 
   (* HELPER to calculate score from list of ( interactions) *)
   let calculate_video_score (interactions : (float * interaction) list) : float
@@ -534,7 +534,7 @@ module CFRecommender = struct
         acc +. weighted_score)
       0.0 interactions
 
-  let%test "test_calculate_score" =
+  let%test "test_calculate_score" = (
     let inter_a =
       {
         video = { title = "Vid"; ascii = ""; genre = "" };
@@ -553,7 +553,7 @@ module CFRecommender = struct
     let input_list = [ (1.0, inter_a); (0.5, inter_b) ] in
 
     let total_score = calculate_video_score input_list in
-    abs_float (total_score -. 1.0) < 0.01
+    abs_float (total_score -. 1.0) < 0.01 ) [@coverage off]
 
   (* HELPER go through hash table calculate list of tuples (video * score) *)
   let score_videos (video_table : (video, (float * interaction) list) Hashtbl.t)
@@ -564,7 +564,7 @@ module CFRecommender = struct
         (video, total_score) :: acc)
       video_table []
 
-  let%test "test_score_videos_basic" =
+  let%test "test_score_videos_basic" = (
     let table = Hashtbl.create 5 in
     let vid_high =
       { title = "High Score Video"; ascii = ""; genre = "Genre A" }
@@ -582,7 +582,7 @@ module CFRecommender = struct
       let high_score = List.assoc vid_high results in
       let low_score = List.assoc vid_low results in
       abs_float (high_score -. 1.0) < 0.01 && abs_float low_score < 0.01
-    with Not_found -> false
+    with Not_found -> false ) [@coverage off]
 
   let get_cf_scores_for_target (target_user : user)
       (system_embeddings : (user * float array) list) (k : int) :

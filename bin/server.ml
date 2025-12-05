@@ -1,22 +1,11 @@
 open Terminal_tok.Types
 open Terminal_tok
+open Terminal_tok.Server_utils
 
 let localhost_5000 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5000)
 let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001)
 let (all_clients : client list ref) = ref []
 let num_clients = ref 0
-
-(** [string_of_addr] provides a channel address as a string]*)
-let string_of_addr = function
-  | Unix.ADDR_UNIX s -> s
-  | ADDR_INET (ip, port) ->
-      Printf.sprintf "%s:%d" (Unix.string_of_inet_addr ip) port
-
-(** [format_clients clients] returns the list of clients a string]*)
-let format_clients (clients : client list) =
-  let string = ref "" in
-  List.iter (fun x -> string := !string ^ " " ^ x.cnt_name) (List.rev clients);
-  !string
 
 let run_counting_server sockadr () =
   let%lwt () =
@@ -49,15 +38,7 @@ let run_counting_server sockadr () =
     let rec handle_message () =
       (* Whenever someone joins, fill all channels with new list of clients*)
       let%lwt _ = Lwt_io.read_line client_in in
-      let%lwt () =
-        Lwt_list.iter_p
-          (fun client ->
-            let%lwt () =
-              Lwt_io.write_line client.cnt_out (format_clients !all_clients)
-            in
-            Lwt_io.flush client.cnt_out)
-          !all_clients
-      in
+      let%lwt () = write_clients_to_all all_clients in
 
       handle_message ()
     in
@@ -70,13 +51,7 @@ let run_counting_server sockadr () =
         List.filter (fun x -> x.cnt_name <> name) !all_clients
       in
       all_clients := new_clients;
-      Lwt_list.iter_p
-        (fun client ->
-          let%lwt () =
-            Lwt_io.write_line client.cnt_out (format_clients !all_clients)
-          in
-          Lwt_io.flush client.cnt_out)
-        !all_clients
+      write_clients_to_all all_clients
   in
   let server () =
     let%lwt running_server =
@@ -142,6 +117,7 @@ let run_messaging_server sockadr () =
 
           let client_message = Encrypt.decrypt_msg client_message key in
 
+          (* writes to all clients except self *)
           let%lwt () =
             Lwt_list.iter_p
               (fun client ->

@@ -7,6 +7,16 @@ let localhost_5001 = Unix.ADDR_INET (Unix.inet_addr_loopback, 5001)
 let (all_clients : client list ref) = ref []
 let num_clients = ref 0
 
+(** [write_clients_to_all clients] writes list of all clients to all clients *)
+let write_clients_to_all all_clients =
+  Lwt_list.iter_p
+    (fun client ->
+      let%lwt () =
+        Lwt_io.write_line client.cnt_out (format_clients !all_clients)
+      in
+      Lwt_io.flush client.cnt_out)
+    !all_clients
+
 let run_counting_server sockadr () =
   let%lwt () =
     Lwt_io.printf "Starting counting server on %s\n" (string_of_addr sockadr)

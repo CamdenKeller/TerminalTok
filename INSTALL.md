@@ -46,7 +46,7 @@ In a dedicated terminal window, run:
 ```bash
 dune exec bin/server.exe
 ```
-*Note: The server must be running for Online Mode (Chat & Videos) to work.*
+*Note: The server must be running for Online Mode (Chat, ASCII, and Videos) to work.*
 
 ### Step 2: Start the Client
 In a separate terminal window (you can open multiple for different users), run:
